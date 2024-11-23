@@ -1,0 +1,33 @@
+## Continue Personal finance app
+
+SecureSweBank
+
+What to do:
+The application will connect and use a database to save and manage information. 
+All transactions must be saved and retrieved and deleted and updated to/from the database. 
+There should also be an account system, with which you can log in to different users,
+switch between them and add transactions. 
+All the functionality that was in the assignment from the previous course should be available now,
+but can be done per-user. One user can't see transactions for another user.
+
+Clarification requirements for account systems, the following possibilities shall be available:
+- Register users by name and password
+- Log in by name and password
+- Log out (and be able to switch users by logging in again)
+- All functionality from previous task, linked per-user
+
+IG, G & VG
+Requirements for G:
+- Follow the instructions in the description
+- Use Git for versioning
+- Use PostgreSQL as a database
+
+Requirements for VG: 
+- Uppnå alla krav för G
+- Spara kontoinformation på ett säkert sätt (hashing av lösenord)
+- Använd SQL JOINS för data hämtning när det går
+- Använd minst två SQL TRANSACTIONS.
+- Använd alla normalformer (1NF, 2NF, 3NF)
+- Felhantera alla databasoperationer (try/catch, resource releasing, using)
+
+Make the G version early to you can try on VG
