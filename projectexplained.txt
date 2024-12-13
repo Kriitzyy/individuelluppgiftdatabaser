@@ -30,4 +30,8 @@ Requirements for VG:
 - Använd alla normalformer (1NF, 2NF, 3NF)
 - Felhantera alla databasoperationer (try/catch, resource releasing, using)
 
-Make the G version early to you can try on VG
+Good information for the task: 
+Lessons 1-4, with the exercises and the content should be all we will learn for the task!
+Documents 1-7 in documents in github can be useful for the task!
+
+Make the G version early so you can try on VG

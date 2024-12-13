@@ -26,3 +26,11 @@ C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\u
 C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\obj\Debug\net8.0\uppgift.pdb
 C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\obj\Debug\net8.0\uppgift.genruntimeconfig.cache
 C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\obj\Debug\net8.0\ref\uppgift.dll
+C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\obj\Debug\net8.0\uppgift.sourcelink.json
+C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\bin\Debug\net8.0\Dapper.dll
+C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\bin\Debug\net8.0\Npgsql.dll
+C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\obj\Debug\net8.0\uppgift.csproj.AssemblyReference.cache
+C:\Users\Mnaka\OneDrive\Skrivbord\dotnetassignment\individuelluppgiftdatabaser\uppgift\obj\Debug\net8.0\uppgift.csproj.Up2Date

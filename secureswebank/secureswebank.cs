@@ -5,7 +5,10 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Transactions;
+using System.Linq; // Dessa är classer/metoder dom har specialla funktioner i sig som gör det möjligt att använda funktionerna när du har classen 
 using Microsoft.VisualBasic;
+using System.Reflection.Metadata;
+using System.ComponentModel.DataAnnotations;
 
 namespace SecureSweBank { // Namespace puts together codes.
 
@@ -14,11 +17,13 @@ namespace SecureSweBank { // Namespace puts together codes.
         public decimal Amount { get; set; }
         public string Source { get; set; } 
         public DateTime Date { get; set; }
-    
-        public UserTransaction(decimal amount, string source) {
+        public static List<UserTransaction> DeletedMoney = new List<UserTransaction>(); 
+        
+            public UserTransaction(decimal amount, string source) {
             Amount = amount;
             Source = source; 
             Date = DateTime.Now; 
+            List<UserTransaction> DeletedMoney = new();
         }
       
         public static void UsersMoneyDeposit(List<UserTransaction> TransactionList) { // NEtod to Deposit money. Works FINE
@@ -41,11 +46,6 @@ namespace SecureSweBank { // Namespace puts together codes.
             }
         }
 
-        // Method to delete a transaction. 
-        // Works good it you put 500, and delete 500, 
-        // you can only delete the money you put in
-        // Change to, you can delete how much you want leftovers are left. 
-        // So the money spent yearly, etc works
         public static void UsersDeleteTransaction(List<UserTransaction> TransactionList) {
  
             if (TransactionList.Count == 0) { // If the list if empty the user can't delete money
@@ -66,14 +66,16 @@ namespace SecureSweBank { // Namespace puts together codes.
             Console.WriteLine("\nEnter the source you want to delete:");
             string DeleteUserSource = Console.ReadLine()!.ToLower();
 
-            if (decimal.TryParse(DeleteUsersAmount, out decimal amountToDelete))
-            { 
+            if (decimal.TryParse(DeleteUsersAmount, out decimal amountToDelete)){ 
+
                 bool DeleteButton = false;
 
-                for (int i = 0; i < TransactionList.Count; i++)
-                {
+                for (int i = 0; i < TransactionList.Count; i++){
+
                     if (TransactionList[i].Amount == amountToDelete  && // Checking if the amount is stored as index
                     TransactionList[i].Source.Equals(DeleteUserSource, StringComparison.OrdinalIgnoreCase)){ 
+
+                    DeletedMoney.Add(TransactionList[i]);
 
                     TransactionList.RemoveAt(i); // Removing the users input with index
 
@@ -90,16 +92,13 @@ namespace SecureSweBank { // Namespace puts together codes.
                     Console.WriteLine("No transactions were found with the specified amount and source.");
                 }
             }
-            else
-            {   
+            else{   
+
                 Console.WriteLine("Write the correct amount you want to delete!");
             }
             
         }
       
-      // Does it need to be changed? 
-      // Because the user can see what he put in
-      // Put if he deletes money will the leftovers be shown?
         public static void UsersCurrentBalance(List<UserTransaction> TransactionList){  // Fucntion to view current balance
 
             if (TransactionList.Count == 0){ // If the user doesnt have money
@@ -114,80 +113,89 @@ namespace SecureSweBank { // Namespace puts together codes.
             }
             
         }
+        public static void UsersMoneySpent(List<UserTransaction> TransactionList){
 
-        // Not working for some reason, 
-        // When the delete is fixed, 
-        // Fix so the user can see how much he deleted
-        public static void UsersMoneySpent(List<UserTransaction> TransactionList){ // Fucntion for the money spent 
+            if (TransactionList.Count == 0 && DeletedMoney.Count == 0){
 
-            bool UserIsRunning = true; // Boolean for the while loop
+                Console.WriteLine("No transactions available to calculate money spent.");
+                return;
+            }
 
-            while (UserIsRunning){
+            bool UserIsUsing = true;
 
-            int UsersMenuOption; 
+            while (UserIsUsing){
 
-            DisplayMenu.DisplayMoneySpentMenu(); // Menu for money spent
+            DisplayMenu.DisplayMoneySpentMenu(); // Display the menu for spending options
 
-            string UserChoice = Console.ReadLine()!.ToLower(); 
-            
-            if (int.TryParse(UserChoice, out UsersMenuOption)) { 
+            Console.WriteLine("Choose an option (1-5):");
 
-                DateTime TheDate = DateTime.Now; // The date
+            string UsersChoice = Console.ReadLine()!.ToLower();
 
-                decimal UsersTotalSpent =  0; // Users total spent
+                if (int.TryParse(UsersChoice, out int usersMenuOption)){
 
-                foreach (var UserTransaction in TransactionList) {
-                        
-                    if (UserTransaction.Amount < 0) { 
-                        switch (UsersMenuOption) {
-                            case 1:  
-                            if (UserTransaction.Date.Year == TheDate.Year) { // This case checks if the transaction occurred in the current month of the current year
-                                //UsersTotalSpent += UserTransaction.Amount; 
-                                UsersTotalSpent += Math.Abs(UserTransaction.Amount); // Add to total spent (using Math.Abs for negative values)
+                    DateTime currentDate = DateTime.Now; // Current date
 
-                            }
-                            break;   
+                    decimal totalSpent = 0; // Total money spent
 
-                            case 2:
-                            if (UserTransaction.Date.Year == TheDate.Year && UserTransaction.Date.Month == TheDate.Month) {
-                            // This case checks if the transaction occurred in the current month of the current yea
-                                UsersTotalSpent += UserTransaction.Amount;
-                            }
+                    Func<UserTransaction, bool> filter = t => false; // Default to no filtering
+
+                        switch (usersMenuOption){
+
+                            case 1: // Yearly spending
+                            filter = t => t.Date.Year == currentDate.Year;
                             break;
 
-                            case 3:
-                              if (UserTransaction.Date.Year == TheDate.Year && 
-                              YearMonthWeekDay(UserTransaction.Date) == YearMonthWeekDay(TheDate)) { 
-                              UsersTotalSpent += UserTransaction.Amount;
-                              }
+                            case 2: // Monthly spending
+                            filter = t => t.Date.Year == currentDate.Year && t.Date.Month == currentDate.Month;
                             break;
 
-                            case 4:
-                            if (UserTransaction.Date.Date == TheDate.Date) {   
-                                UsersTotalSpent += UserTransaction.Amount;
-                            }
+                            case 3: // Weekly spending
+                            filter = t => t.Date.Year == currentDate.Year && YearMonthWeekDay(t.Date) == YearMonthWeekDay(currentDate);
                             break;
 
-                            case 5:   
-                            Console.WriteLine("Exiting....");
-                            UserIsRunning = false;
+                            case 4: // Daily spending
+                            filter = t => t.Date.Date == currentDate.Date;
                             break;
-                            
+
+                            case 5: // Exit
+                            Console.WriteLine("Exiting money spent view...");
+                            UserIsUsing = false;
+                            continue;
+
                             default:
-                            Console.WriteLine("Invalid choice, choose between 1-5");
-                            break;
+                            Console.WriteLine("Invalid choice, please choose a number between 1 and 5.");
+                            continue;
                         }
-                   }
-                    
-                 } 
-             }   
-             else {
-                Console.WriteLine("Invalid input, choose between 1-51");
-             }
-         }
-     }
-        
-    
+
+                        if (usersMenuOption >= 1 && usersMenuOption <= 4){
+
+                            // Calculate spending from both lists
+                            totalSpent += CalculateUsersSpentMoney(TransactionList, filter); // Spending from the main list
+                            totalSpent += CalculateMoneySpent(filter); // Spending from the deleted list
+
+                            // Display the result
+                            Console.WriteLine($"\nTotal money spent under {UsersChoice} period is: {totalSpent:C}");
+                        }
+                    }
+                    else{
+                        Console.WriteLine("Invalid input, please enter a number between 1-5.");
+                }
+            }
+        }
+        public static decimal CalculateMoneySpent(Func<UserTransaction, bool> filter){
+
+            decimal total = 0;
+
+            foreach (var transaction in DeletedMoney){
+
+                if (filter(transaction) && transaction.Amount > 0) {// Deleted money was originally a deposit (positive)
+
+                    total += Math.Abs(transaction.Amount); // Treat it as spending
+            }
+        }
+        return total;
+    }
+
         // Function for users income
         public static void UsersMoneyIncome(List<UserTransaction> transactionList){
 
@@ -205,37 +213,33 @@ namespace SecureSweBank { // Namespace puts together codes.
 
             decimal TotalIncome = 0;  // Ensuring consistent use of 'TotalIncome' with capital 'T'
 
-            for (int i = 0; i < transactionList.Count; i++)
-            {
-                if (transactionList[i].Amount > 0)
-                {
-                    switch (UserChoice)
-                    {
+            for (int i = 0; i < transactionList.Count; i++){
+
+                if (transactionList[i].Amount > 0){
+
+                    switch (UserChoice){
+
                         case 1: // Yearly income
-                            if (transactionList[i].Date.Year == currentDate.Year)
-                            {
+                            if (transactionList[i].Date.Year == currentDate.Year){
                                 TotalIncome += transactionList[i].Amount;
                             }
                             break;
 
                         case 2: // Monthly income
                             if (transactionList[i].Date.Year == currentDate.Year &&
-                                transactionList[i].Date.Month == currentDate.Month)
-                            {
+                                transactionList[i].Date.Month == currentDate.Month){
                                 TotalIncome += transactionList[i].Amount;
                             }
                             break;
 
                         case 3: // Weekly income
-                            if (YearMonthWeekDay(transactionList[i].Date) == YearMonthWeekDay(currentDate))
-                            {
+                            if (YearMonthWeekDay(transactionList[i].Date) == YearMonthWeekDay(currentDate)){
                                 TotalIncome += transactionList[i].Amount;
                             }
                             break;
 
                         case 4: // Daily income
-                            if (transactionList[i].Date.Date == currentDate.Date)
-                            {
+                            if (transactionList[i].Date.Date == currentDate.Date){
                                 TotalIncome += transactionList[i].Amount;
                             }
                             break;
@@ -251,27 +255,22 @@ namespace SecureSweBank { // Namespace puts together codes.
                     }
                 }
             }
-
-            if (UserChoice >= 1 && UserChoice <= 4) 
-            {
+            
+            if (UserChoice >= 1 && UserChoice <= 4){
                 Console.WriteLine($"\nTotal income for the selected period: {TotalIncome:C}");
             }
         }
-        else
-        {
+            else {
             Console.WriteLine("Invalid input, please enter a number between 1-5.");
         }
     }
-}        
-
+}
         public static void UserNeedHelp() { 
    
             DisplayMenu.DisplayUserNeedHelp();
 
             string Feedback = Console.ReadLine()!.ToLower();
         }
-        
-        // Function for Year month week and day
         public static int YearMonthWeekDay(DateTime UsersDate) { 
 
             var cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
@@ -279,6 +278,19 @@ namespace SecureSweBank { // Namespace puts together codes.
             var weekOfYear = calendar.GetWeekOfYear(UsersDate, System.Globalization.CalendarWeekRule.FirstDay, DayOfWeek.Monday); /// The first day of the week
             return weekOfYear; 
         }
-       
+        private static decimal CalculateUsersSpentMoney(List<UserTransaction> transactionList, Func<UserTransaction, bool> filter){
+
+        decimal total = 0;
+
+        foreach (var transaction in transactionList){
+
+        if (filter(transaction) && transaction.Amount < 0) // Ensure we're dealing with expenses
+        {
+            total += Math.Abs(transaction.Amount); // Add absolute value of the negative amount
+        }
     }
+    return total;
+    }
+  }
 }
+

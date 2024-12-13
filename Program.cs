@@ -33,8 +33,7 @@ namespace SecureSweBank // Namespace puts together codes.
 
                         case 3:
                             UserTransaction.UsersDeleteTransaction(TransactionList); 
-                             // Fix the delete so the user can delete as much as he wants
-                            break; // And the lefts overs are left, so that he can see the money spent. because it is not working
+                            break;
 
                         case 4:
                             UserTransaction.UsersCurrentBalance(TransactionList); 
