@@ -65,5 +65,11 @@ namespace SecureSweBank // Namespace puts together codes.
 
             Console.WriteLine("\nRegards, SecureSwe Bank!");
         }
+          public static void UserNeedHelp() { 
+   
+            DisplayMenu.DisplayUserNeedHelp();
+
+            string Feedback = Console.ReadLine()!.ToLower();
+        }
     }
 }

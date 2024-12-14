@@ -28,27 +28,27 @@ namespace SecureSweBank // Namespace puts together codes.
                             break; 
 
                         case 2:
-                             UserTransaction.UsersMoneyDeposit(TransactionList); 
+                             UserTransactionMethods.UsersMoneyDeposit(TransactionList); 
                             break;    
 
                         case 3:
-                            UserTransaction.UsersDeleteTransaction(TransactionList); 
+                            UserTransactionMethods.UsersDeleteTransaction(TransactionList); 
                             break;
 
                         case 4:
-                            UserTransaction.UsersCurrentBalance(TransactionList); 
+                            UserTransactionMethods.UsersCurrentBalance(TransactionList); 
                             break;
 
                         case 5: 
-                            UserTransaction.UsersMoneySpent(TransactionList);
+                            UserTransactionMethods.UsersMoneySpent(TransactionList);
                             break;// ending the case 
 
                         case 6:
-                            UserTransaction.UsersMoneyIncome(TransactionList); 
+                            UserTransactionMethods.UsersMoneyIncome(TransactionList); 
                             break;
 
                         case 7:
-                            UserTransaction.UserNeedHelp();
+                            DisplayMenu.UserNeedHelp();
                             break;
 
                         case 8:
