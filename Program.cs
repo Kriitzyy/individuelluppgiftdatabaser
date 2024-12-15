@@ -25,7 +25,7 @@ namespace SecureSweBank // Namespace puts together codes.
                     switch (usersmenuoptions){ 
                         case 1:
                         Console.WriteLine(""); // User logs in a account
-                            break; 
+                        break; 
 
                         case 2:
                              UserTransactionMethods.UsersMoneyDeposit(TransactionList); 

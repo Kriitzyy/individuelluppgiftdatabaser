@@ -35,3 +35,10 @@ Lessons 1-4, with the exercises and the content should be all we will learn for 
 Documents 1-7 in documents in github can be useful for the task!
 
 Make the G version early so you can try on VG
+
+Things to include in the project, for G
+- Register users by name and password
+- Log in by name and password
+- Log out (and be able to switch users by logging in again)
+- All functionality from previous task, linked per-user
+
