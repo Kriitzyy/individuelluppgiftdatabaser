@@ -1,26 +1,92 @@
 ﻿using System;
 using System.Collections.Generic;
-using SecureSweBank; // Use the namespace for access to Transaction class
+using CoreofApplication;
+using Npgsql;
+using BCrypt;
+using Client; // Use the namespace for access to Transaction class
 
-namespace SecureSweBank // Namespace puts together codes.
+
+namespace CoreofApplication // Namespace puts together codes.
 {
     class Program {
+        // Allting som ska användas ska anropas här, dela upp det och använd metoder så det blir mindre val
         public static List<UserTransaction> TransactionList = new List<UserTransaction>(); 
-        
-        public static void Main(string[] args){
+            public static async Task Main(string[] args){
+            
+            var postgresClientService = new PostgresClientService();
 
+
+            // var newClient = await postgresClientService.RegisterNewUser(username, password, email);
+
+         
+            int LoginChoice;
+            bool LoginBool = false; 
+            Connection.Go();
+
+            while (!LoginBool) {
+                DisplayMenu.DisplayWelcomeTheme(); 
+
+                DisplayMenu.DisplayLoginOptions(); // Users login options
+
+                String LogInInput = Console.ReadLine()!.ToLower();
+
+                if (int.TryParse(LogInInput, out LoginChoice)) {
+
+                    if (LoginChoice == 1) {
+
+                        Console.WriteLine("Enter your username for a new user:");
+                        string UserName = Console.ReadLine()!.ToLower();
+
+                        Console.WriteLine("Enter your password:");
+                        string Password = Console.ReadLine()!.ToLower();
+
+                        Console.WriteLine("Enter your email:");
+                        string Email = Console.ReadLine()!.ToLower();
+
+                        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(Password);
+
+                        var newClient = await postgresClientService.RegisterNewUser(UserName, Password, Email);
+
+                        if (newClient != null) {
+
+                            Console.WriteLine("User registered successfully!");
+                            Console.WriteLine($"ID: {newClient.Id}");
+                            Console.WriteLine($"Password: {newClient.passwordhash}"); // Koden är hashad vilket gör att den it syns bara massa symboler
+                            Console.WriteLine($"Username: {newClient.username}");
+                            Console.WriteLine($"Email: {newClient.email}");
+                        }
+                        else {
+
+                            Console.WriteLine("Registration failed, please try again");
+                        }
+                    }
+                    else if (LoginChoice == 2) {
+
+                        // Metod för att logga in med existernade user 
+                    }
+                    else if (LoginChoice == 3) {
+
+                        // Metod för logga ut och logga in med exiterande user
+                    }
+                    else if (LoginChoice == 4) {
+
+                        // Metod för att göra en exit
+                    }
+
+                }
+            } 
+            
             bool stillrunning = true; 
             int usersmenuoptions;
 
             while (stillrunning){ 
 
-                DisplayMenu.DisplayWelcomeTheme(); 
 
                 DisplayMenu.DisplayMainMenu(); 
                 
-                string getUserInput = Console.ReadLine()!.ToLower(); // Reading user input and converts to lowercased
+                string GetUserInput = Console.ReadLine()!.ToLower(); // Reading user input and converts to lowercased
  
-                if (int.TryParse(getUserInput, out usersmenuoptions)){ 
+                if (int.TryParse(GetUserInput, out usersmenuoptions)){ 
 
                     switch (usersmenuoptions){ 
                         case 1:

@@ -1,0 +1,9 @@
+Här ska det finnas information eller annat, informationen ska bara handla om innehållet i foldern Commands
+Det kan finnas kod, saker att göra till nästa gång osv.  
+
+
+RegisterNewUser.cs fil
+Filen är klar och innehållet fungerar som det ska 
+Kvar: 
+Anropa den i main metoden med if-else satsen
+för att testa och lägga till användare och köra den

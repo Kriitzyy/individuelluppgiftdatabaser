@@ -1,6 +1,6 @@
 using System;
 
-namespace SecureSweBank // Namespace puts together codes.
+namespace CoreofApplication // Namespace puts together codes.
 {
     public static class DisplayMenu
     {
@@ -14,6 +14,18 @@ namespace SecureSweBank // Namespace puts together codes.
     \  /\  /  __/ | (_| (_) | | | | | |  __/ | || (_) | 
      \/  \/ \___|_|\___\___/|_| |_| |_|\___|  \__\___/                                        
 ");
+        }
+
+        public static void DisplayLoginOptions() {
+            
+            Console.WriteLine("SecureSweBank -");
+            Console.WriteLine("And it's new features!");
+
+            Console.WriteLine("\nChoose an option: ");
+            Console.WriteLine("[1] - Register new account!");
+            Console.WriteLine("[2] - Already have a account? Login");
+            Console.WriteLine("[3] - log out, and change user!");
+            Console.WriteLine("[4] - Exit");
         }
 
         public static void DisplayMainMenu()

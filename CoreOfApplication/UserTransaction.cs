@@ -1,22 +1,30 @@
 using System;
 using System.Collections.Generic;
 
-namespace SecureSweBank
+namespace CoreofApplication
 {
     public class UserTransaction
     {
         // Properties of a transaction 
-        public decimal Amount { get; set; }
-        public string Source { get; set; }
-        public DateTime Date { get; set; }
         public static List<UserTransaction> DeletedMoney = new List<UserTransaction>();
+        public int TransactionId {get; set;}
+        public int ClientId {get; set;}
+        public decimal Amount { get; set; }
+        public string Description  { get; set; }
+        public string TransactionType { get; set; }
+       public DateTime TransactionDate { get; set; }
 
-        // Constructor
+        // Constructors
         public UserTransaction(decimal amount, string source)
         {
+            ClientId = ClientId;
             Amount = amount;
-            Source = source;
-            Date = DateTime.Now;
+            Description  = Description;
+            TransactionType = TransactionType;
+            TransactionDate = DateTime.Now;
+            
         }
+
+    
     }
 }
