@@ -13,18 +13,14 @@ namespace CoreofApplication // Namespace puts together codes.
         public static List<UserTransaction> TransactionList = new List<UserTransaction>(); 
             public static async Task Main(string[] args){
             
-            var postgresClientService = new PostgresClientService();
-
-
-            // var newClient = await postgresClientService.RegisterNewUser(username, password, email);
-
+             var postgresClientService = new PostgresClientService();
          
             int LoginChoice;
             bool LoginBool = false; 
+
             Connection.Go();
 
             while (!LoginBool) {
-                DisplayMenu.DisplayWelcomeTheme(); 
 
                 DisplayMenu.DisplayLoginOptions(); // Users login options
 
@@ -35,17 +31,17 @@ namespace CoreofApplication // Namespace puts together codes.
                     if (LoginChoice == 1) {
 
                         Console.WriteLine("Enter your username for a new user:");
-                        string UserName = Console.ReadLine()!.ToLower();
+                        string username = Console.ReadLine()!.ToLower();
 
                         Console.WriteLine("Enter your password:");
-                        string Password = Console.ReadLine()!.ToLower();
+                        string passwordhash = Console.ReadLine()!.ToLower();
 
                         Console.WriteLine("Enter your email:");
-                        string Email = Console.ReadLine()!.ToLower();
+                        string email = Console.ReadLine()!.ToLower();
 
-                        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(Password);
+                        string HashedPassword = BCrypt.Net.BCrypt.HashPassword(passwordhash);
 
-                        var newClient = await postgresClientService.RegisterNewUser(UserName, Password, Email);
+                        var newClient = await postgresClientService.RegisterNewUser(username, passwordhash, email);
 
                         if (newClient != null) {
 
@@ -62,6 +58,26 @@ namespace CoreofApplication // Namespace puts together codes.
                     }
                     else if (LoginChoice == 2) {
 
+                            Console.WriteLine("Enter your username or email to login: ");
+                            string UserNameOrEmail = Console.ReadLine()!.ToLower();
+
+                            Console.WriteLine("Enter your password: ");
+                            string LoginPassword = Console.ReadLine()!.ToLower();
+                            
+                            var LoggedInUser = await postgresClientService.UserLogin(UserNameOrEmail, LoginPassword, UserNameOrEmail);
+
+                            if (LoggedInUser != null) {
+
+                            Console.WriteLine("Login successful!");
+                            Console.WriteLine($"Welcome, {LoggedInUser.username}!");
+                            LoginBool = true;  // Proceed to the main menu
+
+                            }
+                            else {
+
+                                Console.WriteLine("Login failed.. try again!");
+                            }
+
                         // Metod för att logga in med existernade user 
                     }
                     else if (LoginChoice == 3) {
@@ -69,7 +85,9 @@ namespace CoreofApplication // Namespace puts together codes.
                         // Metod för logga ut och logga in med exiterande user
                     }
                     else if (LoginChoice == 4) {
-
+                        
+                        postgresClientService.UserLogout(); // Anrop av UserLogout-metoden
+                        LoginBool = false; // Återgå till inloggningsmenyn
                         // Metod för att göra en exit
                     }
 

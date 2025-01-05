@@ -1,8 +1,6 @@
 using System; 
 using System.Data.Common;
 using System.Text.RegularExpressions;
-using Npgsql;
-using BCrypt;
 
 namespace Client {
 

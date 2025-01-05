@@ -14,4 +14,3 @@ Gör en  ny tabell med samma namn och columner men utan UNIQUE constrainten
 Console.WriteLine($"StackTrace: {ex.StackTrace}"); // Skriver ut hela problemet i terminalen, finns i catch (PostgresClientService.cs fil.)
 
 
-  

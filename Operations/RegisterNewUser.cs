@@ -11,21 +11,25 @@ namespace Client {
 
         // Flyttad RegisterNewUser-metod
         public async Task<Clients?> RegisterNewUser(string username, string passwordhash, string email) {
+
             try {
+
                 using (var Connection = new NpgsqlConnection(ConnectionString)) {
                     
                     await Connection.OpenAsync();  // Använd async-metod för att öppna anslutningen asynkront
+                    
+                    string UsersPassword = "Password.Secured";
 
-                    string UserPassword = BCrypt.Net.BCrypt.HashPassword(passwordhash);
+                    string UserPassword = BCrypt.Net.BCrypt.HashPassword(passwordhash); 
 
-                    using (var cmd = new NpgsqlCommand("INSERT INTO Clients (username, passwordhash, email) VALUES"
-                        + "(@username, @password, @email) RETURNING Id, username, passwordhash, email", Connection)) {
+                    using (var Query = new NpgsqlCommand("INSERT INTO clients (username, passwordhash, email) VALUES" 
+                        + "(@username, @passwordhash, @email) RETURNING Id, username, passwordhash, email", Connection)) {
 
-                        cmd.Parameters.AddWithValue("@username", username);
-                        cmd.Parameters.AddWithValue("@password", UserPassword);
-                        cmd.Parameters.AddWithValue("@email", email);
+                        Query.Parameters.AddWithValue("@username", username);
+                        Query.Parameters.AddWithValue("@passwordhash", UserPassword);
+                        Query.Parameters.AddWithValue("@email", email);
 
-                        using (var Reader = await cmd.ExecuteReaderAsync()) {
+                        using (var Reader = await Query.ExecuteReaderAsync()) {
                             if (await Reader.ReadAsync()) {  // Läs en gång för att få resultatet
 
                                 var ClientData = new Clients {
@@ -34,7 +38,7 @@ namespace Client {
                                     passwordhash = Reader.GetString(2), // Hämtar hashad lösenord från tredje kolumn
                                     email = Reader.GetString(3) // Hämtar e-post från fjärde kolumn
                                 };
-
+                                Console.WriteLine($"User Registered: {ClientData.username}, ID: {ClientData.Id}");
                                 return ClientData;
                             }
                         }

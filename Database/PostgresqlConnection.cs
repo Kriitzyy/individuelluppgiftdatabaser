@@ -1,5 +1,6 @@
-using Npgsql;
 using System;
+using System.IO;  // To read the SQL file
+using Npgsql;
 
 public class Connection {
 
@@ -7,15 +8,12 @@ public class Connection {
 
         var ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
 
-        using (var conn = new NpgsqlConnection(ConnectionString))
-        {
-            try
-            {
+        using (var conn = new NpgsqlConnection(ConnectionString)) {
+            try {
                 conn.Open();
                 Console.WriteLine("Connection to PostgreSQL is successful!");
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 Console.WriteLine($"Connection failed: {ex.Message}");
             }
         }

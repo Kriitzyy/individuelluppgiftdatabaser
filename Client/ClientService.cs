@@ -3,9 +3,9 @@ using Npgsql;
 
 namespace Client  {
 public interface IClientService {
-    Task<Clients?> RegisterNewUser(string UserName, string password, string Email);
-    Clients? UserLogin(string username, string password);
-    void UserLogout();
-    Clients? GetExistingUser();
+    Task<Clients?> RegisterNewUser(string username, string passwordhash, string email);
+    Task<Clients?> UserLogin(string username, string passwordhash, string email);
+    Clients? UserLogout();
+    Clients? LogoutAndSwitchUser(string username, string passwordhash);
     }
 }
