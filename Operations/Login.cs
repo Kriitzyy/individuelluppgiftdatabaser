@@ -2,23 +2,26 @@ using System;
 using System.Threading.Tasks;
 using Npgsql;
 using BCrypt.Net;
+using Client; // Make sure the Clients class is referenced
 
 namespace Client {
 
     public class UserLoginService {
         public readonly string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
 
-        public async Task<Clients?> UserLogin(string username, string passwordhash, string email) {
+        public async Task<Clients?> UserLogin(string username, string password, string email) {
             try {
                 using (var Connection = new NpgsqlConnection(ConnectionString)) {
 
                     await Connection.OpenAsync();
-                    // SQL-fråga som söker efter användaren baserat på username eller email
+
+                    // SQL query that checks for either username or email
                     string SqlQuery = @"SELECT id, username, passwordhash, email 
                     FROM clients WHERE username = @username OR email = @email";
 
                     using (var LoginCommand = new NpgsqlCommand(SqlQuery, Connection)) {
 
+                        // Add parameters for both username and email
                         LoginCommand.Parameters.AddWithValue("@username", username ?? string.Empty);
                         LoginCommand.Parameters.AddWithValue("@email", email ?? string.Empty);
 
@@ -28,7 +31,8 @@ namespace Client {
 
                                 string StoredHashPassword = reader["passwordhash"].ToString();
 
-                                if (BCrypt.Net.BCrypt.Verify(passwordhash, StoredHashPassword)) {
+                                // Compare entered plain password with stored hashed password
+                                if (BCrypt.Net.BCrypt.Verify(password, StoredHashPassword)) {
 
                                     var LoggedInUser = new Clients {
 
@@ -39,8 +43,6 @@ namespace Client {
                                     };
 
                                     Console.WriteLine("The login is successful!");
-                                    
-                                    Console.WriteLine("\nPress any key to continue....");
                                     return LoggedInUser;
                                 }
                                 else {
@@ -55,7 +57,6 @@ namespace Client {
                 }
             }
             catch (Exception ex) {
-
                 Console.WriteLine($"Error during login: {ex.Message}");
             }
 
