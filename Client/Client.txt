@@ -1,16 +1,5 @@
 // Här ska det finnas information eller annat, informationen ska bara handla om innehållet i foldern client 
 
-
-
-12/27/2024
-Register user metod, för att registrera en användare 
-Den ser bra ut men det är något fel med UNIQUE constraint i SQL tabellen 
-Koden ser bra ut och ska fungera
-
-Testa: 
-Lägga in annat värde med cmd.Parameter...
-Gör en  ny tabell med samma namn och columner men utan UNIQUE constrainten 
-
-Console.WriteLine($"StackTrace: {ex.StackTrace}"); // Skriver ut hela problemet i terminalen, finns i catch (PostgresClientService.cs fil.)
-
+Att göra: 
+Koppla transactionerna till användare 
 

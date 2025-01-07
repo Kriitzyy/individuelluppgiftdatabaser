@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using CoreofApplication;
 using Npgsql;
 using BCrypt;
-using Client; // Ensure the namespace is available for accessing the UserLogoutService and UserLoginService classes.
+using dotenv.net;
+using Client;
 
 namespace CoreofApplication
 {
@@ -33,7 +34,6 @@ namespace CoreofApplication
                     if (LoginChoice == 1)
                     {
                         Console.Clear();
-
                         Console.WriteLine("Enter your username for a new user:");
                         string username = Console.ReadLine()!.ToLower();
 
@@ -50,24 +50,20 @@ namespace CoreofApplication
                         if (newClient != null)
                         {
                             Console.Clear();
-
                             Console.WriteLine("\nUser registered successfully!");
                             Console.WriteLine($"ID: {newClient.Id}");
-                            Console.WriteLine($"Password: {newClient.passwordhash}");
                             Console.WriteLine($"Username: {newClient.username}");
                             Console.WriteLine($"Email: {newClient.email}");
                         }
                         else
                         {
                             Console.Clear();
-
                             Console.WriteLine("Registration failed, please try again");
                         }
                     }
                     else if (LoginChoice == 2)
                     {
                         Console.Clear();
-
                         Console.WriteLine("Enter your username or email to login: ");
                         string UserNameOrEmail = Console.ReadLine()!.ToLower();
 
@@ -79,10 +75,9 @@ namespace CoreofApplication
                         if (LoggedInUser != null)
                         {
                             Console.Clear();
-
                             Console.WriteLine("Login successful!");
                             Console.WriteLine($"Welcome, {LoggedInUser.username}!");
-                            LoginBool = true;  // Proceed to the main menu
+                            LoginBool = true;
                         }
                         else
                         {
@@ -92,29 +87,24 @@ namespace CoreofApplication
                     }
                     else if (LoginChoice == 3)
                     {
-                        // Option 3: Log out and log in as a different user
                         Console.Clear();
                         Console.WriteLine("Logging out current user...");
                         userLogoutService.UserLogout(); // Log out the current user
 
                         Console.WriteLine("\nPlease enter credentials for the new user:");
-
-                        // Request new login details
                         Console.WriteLine("Enter your username or email:");
                         string usernameOrEmail = Console.ReadLine()!.ToLower();
 
                         Console.WriteLine("Enter your password:");
                         string password = Console.ReadLine()!.ToLower();
 
-                        // Attempt to log in as a new user (using the UserChangeLogin method)
                         bool loginSuccess = await userLogoutService.UserChangeLogin(usernameOrEmail, password, usernameOrEmail);
 
                         if (loginSuccess)
                         {
                             Console.Clear();
-
                             Console.WriteLine("Successfully logged in with new credentials.");
-                            LoginBool = true; // Proceed to the main menu after successful login
+                            LoginBool = true;
                         }
                         else
                         {
@@ -125,50 +115,42 @@ namespace CoreofApplication
                     else if (LoginChoice == 4)
                     {
                         Console.Clear();
+                        Console.WriteLine("Logging out from the current user.");
+                        postgresClientService.UserLogout(); // Log out the current user
 
-                        Console.WriteLine("Logging out.. from current user ");
-                        postgresClientService.UserLogout(); // Log out user
-
-                        Console.WriteLine($"\nWould you like to log in as another user? Yes or No?");
+                        Console.WriteLine("\nWould you like to log in as another user? Yes or No?");
                         string UserRespons = Console.ReadLine()!.ToLower();
 
-                        if (UserRespons == "yes") {
+                        if (UserRespons == "yes")
+                        {
                             Console.Clear();
-
-                            Console.WriteLine("Enter the username or email for the new user");
+                            Console.WriteLine("Enter the username or email for the new user:");
                             string usernameOrEmail = Console.ReadLine()!.ToLower();
 
-                            Console.WriteLine("Enter the password");
+                            Console.WriteLine("Enter the password:");
                             string password = Console.ReadLine()!.ToLower();
 
                             Clients? newClient = await postgresClientService.LogoutAndSwitchUser(usernameOrEmail, password, usernameOrEmail);
 
-                            if (newClient != null) {
-
+                            if (newClient != null)
+                            {
                                 Console.Clear();
-
-                                Console.WriteLine($"Succesfully switched to {newClient.username}. ");
+                                Console.WriteLine($"Successfully switched to {newClient.username}.");
                             }
-                            else {
-
+                            else
+                            {
                                 Console.Clear();
                                 Console.WriteLine("Failed to login with the new credentials.. returning to login menu..");
                                 LoginBool = false;
                             }
-                                
                         }
-                        else {
-
+                        else
+                        {
                             Console.Clear();
                             Console.WriteLine("You have chosen to exit. Exiting SecureSwebank..");
                             LoginBool = false; // Exit the main menu
-
                         }
-                    
-
-
                     }
-                    
                 }
             }
 
@@ -178,17 +160,15 @@ namespace CoreofApplication
             while (stillrunning)
             {
                 Console.Clear();
-
                 DisplayMenu.DisplayMainMenu();
 
-                string GetUserInput = Console.ReadLine()!.ToLower(); // Reading user input and converts to lowercased
+                string GetUserInput = Console.ReadLine()!.ToLower();
 
                 if (int.TryParse(GetUserInput, out usersmenuoptions))
                 {
                     switch (usersmenuoptions)
                     {
                         case 1:
-                            Console.WriteLine(""); // User logs in a account
                             break;
 
                         case 2:
@@ -232,7 +212,7 @@ namespace CoreofApplication
                     Console.WriteLine("Please, ensure you are choosing between 1-7!");
                 }
 
-                Console.WriteLine("\nPress any key to continue to the menu!...");
+                Console.WriteLine("\nPress any key to continue to the menu...");
                 Console.ReadKey();
             }
         }

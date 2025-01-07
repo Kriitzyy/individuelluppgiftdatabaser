@@ -2,7 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Npgsql;
 using BCrypt.Net;
-using Client; // Make sure the Clients class is referenced
+using Client;
+using System.Diagnostics; // Make sure the Clients class is referenced
 
 namespace Client {
 
@@ -10,6 +11,7 @@ namespace Client {
         public readonly string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
 
         public async Task<Clients?> UserLogin(string username, string password, string email) {
+            
             try {
                 using (var Connection = new NpgsqlConnection(ConnectionString)) {
 
@@ -56,6 +58,7 @@ namespace Client {
                     }
                 }
             }
+
             catch (Exception ex) {
                 Console.WriteLine($"Error during login: {ex.Message}");
             }

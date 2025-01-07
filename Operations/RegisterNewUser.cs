@@ -38,6 +38,9 @@ namespace Client {
                                     passwordhash = Reader.GetString(2), // Hämtar hashad lösenord från tredje kolumn
                                     email = Reader.GetString(3) // Hämtar e-post från fjärde kolumn
                                 };
+
+                                FileManager.SaveUserToFile(ClientData.username, ClientData.passwordhash, ClientData.email);
+
                                 Console.WriteLine($"User Registered: {ClientData.username}, ID: {ClientData.Id}");
                                 return ClientData;
                             }
