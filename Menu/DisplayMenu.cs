@@ -1,4 +1,5 @@
 using System;
+// Ändrad
 
 namespace CoreofApplication // Namespace puts together codes.
 {
@@ -12,8 +13,9 @@ namespace CoreofApplication // Namespace puts together codes.
             Console.WriteLine("\nChoose an option: ");
             Console.WriteLine("[1] - Register new account!");
             Console.WriteLine("[2] - Already have a account? Login");
-            Console.WriteLine("[3] - log out, and change user!");
-            Console.WriteLine("[4] - Exit");
+            Console.WriteLine("[3] - Switch user");
+            Console.WriteLine("[4] - log out");
+            Console.WriteLine("[5] - Exit ");
         }
         public static void DisplayLoginAndOut() {
 

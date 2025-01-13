@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Npgsql;
 
-
+// Koden kanske försvinner för att man ska göra
+// transaction operationerna i Npgsql
 namespace CoreofApplication {
     public static class UserTransactionMethods {
         public static void UsersMoneyDeposit(List<UserTransaction> TransactionList) {
@@ -17,8 +18,10 @@ namespace CoreofApplication {
                 Console.WriteLine("Where does the money come from? (Salary, Loan, Sale, etc.)");
                 string Source = Console.ReadLine()!;
 
+                int ClientId = 2; // tillfällig ta bort när klar, så att add funkar 
+
                 // Adding the new transaction to the list as an object
-                TransactionList.Add(new UserTransaction(amount, Source));
+                TransactionList.Add(new UserTransaction(ClientId, amount, Source)); // Denna att den ska funka 
                 Console.WriteLine("\nThe deposit is successful. Let's continue!");
             }
             else {
@@ -143,8 +146,7 @@ namespace CoreofApplication {
                 }
             }
         }
-        // Om användaren raderar pengar kan han it se 
-        // MEN gör att det står föregående inkomst 
+
         public static void UsersMoneyIncome(List<UserTransaction> transactionList) {
 
             bool UserIsRunning = true; // Boolean for the while loop

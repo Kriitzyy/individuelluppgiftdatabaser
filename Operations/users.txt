@@ -1,5 +1,0 @@
-This file saves username and password and email. Är den nödvändig? 
-
-Username: hi, PasswordHash: $2a$11$C3ZCUZnGISaAq/6OwPfYFe1ElVgnKHJL4LT.RCGPZ7qOZ89B0M49u, Email: now
-Username: hello, PasswordHash: $2a$11$7LCgJbiea.Q6oQG.5V9rWOWGvbSLQOnT/Pir.8S/LjoB4CCgqG3kK, Email: email123
-Username: what, PasswordHash: $2a$11$8l70PLg/gNDN3SSzyOTuSecEn8UnBksIZuIitQl8tL9okhYCVptyW, Email: it

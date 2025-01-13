@@ -1,0 +1,9 @@
+Alla transaktionerna är skriva men inte ändrade eller testade.
+Men koden ser bra ut och förstår den till en nivå 
+
+Att göra: 
+Kolla på alla Transactions filer (alla)
+Och ändra utifrån klassen och columnerna så det blir rätt 
+
+
+Klart: 

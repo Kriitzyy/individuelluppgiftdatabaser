@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using CoreofApplication; 
+// Transaction Klassen 
 
-namespace CoreofApplication
-{
     public class UserTransaction
     {
         // Properties of a transaction 
@@ -10,21 +10,18 @@ namespace CoreofApplication
         public int TransactionId { get; set; }
         public int ClientId { get; set; }
         public decimal Amount { get; set; }
+        public int DeletedAmount { get; set; }
         public string Source  { get; set; }
-        public string TransactionType { get; set; }
-       public DateTime TransactionDate { get; set; }
+        public DateTime TransactionDate { get; set; }
 
-        // Constructors
-        public UserTransaction(decimal amount, string source)
+        public UserTransaction(int ClientId, decimal amount, string source)
         {
-            ClientId = ClientId;
-            Amount = amount;
-            Source  = source;
-            TransactionType = TransactionType;
-            TransactionDate = DateTime.Now;
+            this.ClientId = ClientId;
+            this.Amount = amount;
+            this.Source  = source;
+            this.TransactionDate = DateTime.Now;
             
         }
-
     
     }
-}
+

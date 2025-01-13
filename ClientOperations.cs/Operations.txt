@@ -14,7 +14,12 @@ Osäkerhet:
 Att göra: 
 Kolla upp så du har hashat koden, 
 på rätt sätt. 
-Börja med transactionerna 
+
+Login operationen är lite konstig (kanske inte från den), när jag loggar in med ett konto 
+som exsisterar, jag får första if att de gick sen de går bort och säger det misslyckades 
+else satsen under if finns i if else 2 som hanterar logga in med existerande användare
+
+testa koden i chatgpt, för problemet med att du skickas till else trots rätt namn och kod 
 
 Klart: 
 Change user och logout

@@ -1,9 +1,7 @@
 using System; 
 using System.Data.Common;
 using System.Text.RegularExpressions;
-
-namespace Client {
-
+using Client; 
     public class Clients {
     public int Id { get; set; }
     public string username { get; set;}
@@ -11,4 +9,4 @@ namespace Client {
     public string email { get; set;}
     
     }
-}
+
