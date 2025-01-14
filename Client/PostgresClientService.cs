@@ -77,7 +77,7 @@ namespace Client
         {
             try
             {
-                // If a user is logged in, log them out before switching
+                // If a user is logged in, ask if they want to switch
                 if (LoggedInUser != null)
                 {
                     Console.WriteLine($"You are currently logged in as: {LoggedInUser.username}");
@@ -88,41 +88,34 @@ namespace Client
                     {
                         // Log out the current user
                         LoggedInUser = null;
-                        Console.Clear();
                         Console.WriteLine("Logged out successfully.");
+                        
                     }
-                    else
+                    else if (switchChoice == "N")
                     {
                         Console.WriteLine("Staying logged in as the current user.");
                         return LoggedInUser;  // Return the current user if they don't want to switch
                     }
                 }
 
-                // After logging out, ask whether to log in or register a new user
-                Console.WriteLine("Do you want to log in with an existing account or register a new user?");
-                Console.WriteLine("1. Log in");
+                // Ask the user to log in or register if no user is logged in
+                Console.WriteLine("Do you want to log in with an existing account or register a new user? (1/2)");
+                Console.WriteLine("\n1. Log in");
                 Console.WriteLine("2. Register new user");
                 string choice = Console.ReadLine()!.ToLower();
 
                 if (choice == "1")
                 {
-                    Console.WriteLine("Enter your username or email: ");
-                    string UsernameOrEmail = Console.ReadLine()!;
-                    Console.WriteLine("Enter your password: ");
-                    string password = Console.ReadLine()!;
+                    // Login with passed credentials (if available)
 
-                    return await UserLogin(UsernameOrEmail, password);  // Login with existing account
+                    return await UserLogin(usernameOrEmail, passwordhash);  // Login with passed credentials from Main method
                 }
                 else if (choice == "2")
                 {
-                    Console.WriteLine("Enter your desired username: ");
-                    string username = Console.ReadLine()!;
-                    Console.WriteLine("Enter your password: ");
-                    string password = Console.ReadLine()!;
-                    Console.WriteLine("Enter your email: ");
-                    string email = Console.ReadLine()!;
+                    // Register new user with passed credentials
+                   
 
-                    return await RegisterNewUser(username, password, email);  // Register new user
+                    return await RegisterNewUser("", "", "");  // Register new user (email will be passed in the future)
                 }
                 else
                 {

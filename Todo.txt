@@ -1,0 +1,4 @@
+Att göra: 
+Koden ser bra ut och alla funktioner e klara 
+men när man kör koden så krockar userlogin och switchuser då 
+koden körs två ggr (det som skrivs för användaren vad hen ska göra)

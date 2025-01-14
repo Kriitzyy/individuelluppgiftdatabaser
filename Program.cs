@@ -12,7 +12,7 @@ namespace CoreofApplication
     class Program
     {
         public static List<UserTransaction> TransactionList = new List<UserTransaction>();
-        public static Clients? LoggedInUser = null;  // Track logged-in user
+        public static Clients? LoggedInUser = null; // Track logged-in user
 
         public static async Task Main(string[] args)
         {
@@ -53,13 +53,13 @@ namespace CoreofApplication
                         }
                         else if (UserChoice == 2)
                         {
-                            // Login user
-                            var loggedInUser = await clientService.UserLogin("", "");
+                            // Log in existing user
+                            var loggedInUser = await clientService.UserLogin("", " ");
 
                             if (loggedInUser != null)
                             {
                                 Console.WriteLine($"Successfully logged in as {loggedInUser.username}");
-                                LoggedInUser = loggedInUser;  // Set the logged-in user
+                                LoggedInUser = loggedInUser; // Set the logged-in user
                             }
                             else
                             {
@@ -69,34 +69,16 @@ namespace CoreofApplication
                         else if (UserChoice == 3)
                         {
                             // Switch user functionality
-                            if (LoggedInUser != null)
+                            var switchedUser = await clientService.SwitchUser("", "");
+
+                            if (switchedUser != null)
                             {
-                                Console.WriteLine("Do you want to switch to another user? (Y/N)");
-                                string switchChoice = Console.ReadLine()!.ToUpper();
-
-                                if (switchChoice == "Y")
-                                {
-                                    // Call the SwitchUser method from the PostgresClientService
-                                    var newUser = await clientService.SwitchUser("", "");
-
-                                    if (newUser != null)
-                                    {   
-                                        LoggedInUser = newUser;
-                                        Console.WriteLine($"Successfully logged in as {newUser.username}.");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Failed to switch to a new user. Please try again.");
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Staying logged in.");
-                                }
+                                Console.WriteLine($"Successfully switched to user: {switchedUser.username}");
+                                LoggedInUser = switchedUser; // Update logged-in user
                             }
                             else
                             {
-                                Console.WriteLine("No user is currently logged in.");
+                                Console.WriteLine("Failed to switch user or no changes were made.");
                             }
                         }
                         else if (UserChoice == 4)
@@ -139,7 +121,7 @@ namespace CoreofApplication
                 Console.WriteLine($"Error during registration or login: {ex.Message}");
             }
 
-            // Main user transaction loop
+            // Main user transaction loop (after login)
             bool stillRunning = true;
             int userMenuOptions;
 
