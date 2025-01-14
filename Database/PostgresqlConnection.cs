@@ -2,27 +2,38 @@ using System;
 using System.IO;  // To read the SQL file
 using Npgsql;
 
-public class Connection {
+public class Connection
+{
+    // Privat statisk anslutningssträng som används internt
+    private static string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
 
-        public static void Go() {
+    // Publik metod som returnerar en ny databasanslutning
+    public static NpgsqlConnection GetConnection()
+    {
+        try
+        {
+            return new NpgsqlConnection(ConnectionString);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error creating database connection: " + ex.Message);
+        }
+    }
 
-        var ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
-
-        using (var conn = new NpgsqlConnection(ConnectionString)) {
-            try {
+    // Exempel på metod för att testa anslutningen
+    public static void TestConnection()
+    {
+        using (var conn = GetConnection())
+        {
+            try
+            {
                 conn.Open();
                 Console.WriteLine("Connection to PostgreSQL is successful!");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Console.WriteLine($"Connection failed: {ex.Message}");
             }
         }
     }
 }
-
-/* 
-Skapa tabeller för klasserna du har, Client och Clientservice och om mer kommer,
-sen kan dom implementeras här i vscode 
-*/ 
-
-    

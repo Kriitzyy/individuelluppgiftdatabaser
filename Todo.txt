@@ -1,0 +1,4 @@
+Filen innehåller allmänt för vad som ska göras i denna uppgiften
+
+Att göra: 
+Skapa 

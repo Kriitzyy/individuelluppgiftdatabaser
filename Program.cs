@@ -15,13 +15,14 @@ namespace CoreofApplication
 
         public static async Task Main(string[] args)
         {
+            Connection.TestConnection();
+            
             var postgresClientService = new PostgresClientService();
             var userLogoutService = new UserLogoutService(); // Create instance for handling user logout and login change
 
             int LoginChoice;
             bool LoginBool = false;
 
-            Connection.Go();
 
             while (!LoginBool)
             {

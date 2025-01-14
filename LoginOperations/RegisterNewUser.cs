@@ -7,23 +7,22 @@ namespace Client {
 
     public class UserRegistrationService {
 
-        public readonly string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
-
+        // Använd den statiska Connection-klassen för att få anslutningen istället för att skriva connection string varje gång
+        // Ta bort connection string här, eftersom den nu används via Connection.GetConnection()
+        
         // Flyttad RegisterNewUser-metod
         public async Task<Clients?> RegisterNewUser(string username, string passwordhash, string email) {
 
             try {
-
-                using (var Connection = new NpgsqlConnection(ConnectionString)) {
+                // Använd Connection.GetConnection() för att skapa en anslutning
+                using (var connection = Connection.GetConnection()) {
                     
-                    await Connection.OpenAsync();  // Använd async-metod för att öppna anslutningen asynkront
+                    await connection.OpenAsync();  // Använd async-metod för att öppna anslutningen asynkront
                     
-                    string UsersPassword = "Password.Secured";
-
                     string UserPassword = BCrypt.Net.BCrypt.HashPassword(passwordhash); 
 
                     using (var Query = new NpgsqlCommand("INSERT INTO clients (username, passwordhash, email) VALUES" 
-                        + "(@username, @passwordhash, @email) RETURNING Id, username, passwordhash, email", Connection)) {
+                        + "(@username, @passwordhash, @email) RETURNING Id, username, passwordhash, email", connection)) {
 
                         Query.Parameters.AddWithValue("@username", username);
                         Query.Parameters.AddWithValue("@passwordhash", UserPassword);
@@ -39,7 +38,6 @@ namespace Client {
                                     email = Reader.GetString(3) // Hämtar e-post från fjärde kolumn
                                 };
 
-                                FileManager.SaveUserToFile(ClientData.username, ClientData.passwordhash, ClientData.email);
 
                                 Console.WriteLine($"User Registered: {ClientData.username}, ID: {ClientData.Id}");
                                 return ClientData;

@@ -1,0 +1,5 @@
+Denna filen innehåller saker att göra och klart inom transaktioner: 
+
+Transaktion operationerna: 
+Operationerna är inlagda MEN har inte testat 
+för att se om det fungerar som det ska
