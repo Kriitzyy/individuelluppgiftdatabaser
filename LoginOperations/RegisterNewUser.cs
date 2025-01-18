@@ -23,7 +23,7 @@ namespace Client {
 
                     using (var Query = new NpgsqlCommand("INSERT INTO clients (username, passwordhash, email) VALUES" 
                         + "(@username, @passwordhash, @email) RETURNING Id, username, passwordhash, email", connection)) {
-
+                            
                         Query.Parameters.AddWithValue("@username", username);
                         Query.Parameters.AddWithValue("@passwordhash", UserPassword);
                         Query.Parameters.AddWithValue("@email", email);

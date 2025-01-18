@@ -1,6 +1,8 @@
 -- Observera att filen och innehållet är bara för att hålla koll på
 -- columner och tabellerna.
 
+-- Rätt tabeller som i terminalen
+
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
@@ -19,5 +21,5 @@ CREATE TABLE transactions (
     CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES clients(id)
 );
 
-INSERT INTO transactions (client_id, amount, description, transaction_type) 
-VALUES (1, 100.00, 'Loan', 'income');
+INSERT INTO transactions (client_id, amount, description) 
+VALUES (1, 100.00, 'Loan');

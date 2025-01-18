@@ -1,103 +1,76 @@
 using System;
 using Npgsql;
-// EJ testad, kolla upp koden om den funkar 
-public class DatabaseOperations
-{
-    private static string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
 
-    // Generisk metod för att exekvera SQL-frågor
-    public static void ExecuteQuery(string query, Action<NpgsqlCommand> parameterizeCommand = null)
+namespace QuizApp
+{
+    public class LoadQuizapp
     {
-        using (var connection = new NpgsqlConnection(ConnectionString))
+        public static void SetUpDatabase()
         {
-            try
+            using (var connection = Connection.GetConnection())
             {
-                connection.Open();
-                using (var command = new NpgsqlCommand(query, connection))
+                try
                 {
-                    parameterizeCommand?.Invoke(command);
-                    command.ExecuteNonQuery();
-                    Console.WriteLine("Operation executed successfully.");
+                    connection.Open();
+                    Console.WriteLine("Connected to the database.");
+
+                    // Skapa tabellen för klienter
+                    string createClientsTableQuery = @"
+                        CREATE TABLE IF NOT EXISTS clients (
+                            id SERIAL PRIMARY KEY,
+                            username VARCHAR(255) NOT NULL,
+                            passwordhash VARCHAR(255) NOT NULL,
+                            email VARCHAR(255) NOT NULL
+                        );
+                    ";
+                    ExecuteQuery(connection, createClientsTableQuery);
+
+                    // Lägg till testdata i clients
+                    string insertClientQuery = @"
+                        INSERT INTO clients (username, passwordhash, email) 
+                        VALUES 
+                            ('test1', 'foreign123', 'key')
+                        ON CONFLICT DO NOTHING;
+                    ";
+                    ExecuteQuery(connection, insertClientQuery);
+
+                    // Skapa tabellen för transaktioner
+                    string createTransactionsTableQuery = @"
+                        CREATE TABLE IF NOT EXISTS transactions (
+                            id SERIAL PRIMARY KEY,
+                            client_id INT NOT NULL,
+                            transaction_date DATE NOT NULL DEFAULT CURRENT_DATE,
+                            amount DECIMAL(10, 2) NOT NULL,
+                            description TEXT,
+                            CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES clients(id)
+                        );
+                    ";
+                    ExecuteQuery(connection, createTransactionsTableQuery);
+
+                    // Lägg till testdata i transactions
+                    string insertTransactionQuery = @"
+                        INSERT INTO transactions (client_id, amount, description) 
+                        VALUES 
+                            (1, 100.00, 'Loan')
+                        ON CONFLICT DO NOTHING;
+                    ";
+                    ExecuteQuery(connection, insertTransactionQuery);
+
+                    Console.WriteLine("Tabeller skapade och testdata insatt.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ett fel inträffade: {ex.Message}");
                 }
             }
-            catch (Exception ex)
+        }
+
+        private static void ExecuteQuery(NpgsqlConnection connection, string query)
+        {
+            using (var command = new NpgsqlCommand(query, connection))
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                command.ExecuteNonQuery();
             }
         }
-    }
-
-    // Metod för att lägga till en klient
-    public static void InsertClient(string username, string passwordHash, string email)
-    {
-        string query = @"INSERT INTO clients (username, passwordhash, email)
-                        VALUES (@username, @passwordhash, @email)";
-
-        ExecuteQuery(query, command =>
-        {
-            command.Parameters.AddWithValue("@username", username);
-            command.Parameters.AddWithValue("@passwordhash", passwordHash);
-            command.Parameters.AddWithValue("@email", email);
-        });
-    }
-
-    // Metod för att uppdatera en klient
-    public static void UpdateClientEmail(int clientId, string newEmail)
-    {
-        string query = @"UPDATE clients SET email = @newEmail WHERE id = @clientId";
-
-        ExecuteQuery(query, command =>
-        {
-            command.Parameters.AddWithValue("@clientId", clientId);
-            command.Parameters.AddWithValue("@newEmail", newEmail);
-        });
-    }
-
-    // Metod för att lägga till en transaktion
-    public static void InsertTransaction(int clientId, decimal amount, string description)
-    {
-        string query = @"INSERT INTO transactions (client_id, amount, description, transaction_date)
-                        VALUES (@client_id, @amount, @description, CURRENT_DATE)";
-
-        ExecuteQuery(query, command =>
-        {
-            command.Parameters.AddWithValue("@client_id", clientId);
-            command.Parameters.AddWithValue("@amount", amount);
-            command.Parameters.AddWithValue("@description", description);
-        });
-    }
-
-    // Metod för att uppdatera en transaktion
-    public static void UpdateTransactionDescription(int transactionId, string newDescription)
-    {
-        string query = @"UPDATE transactions SET description = @newDescription WHERE id = @transactionId";
-
-        ExecuteQuery(query, command =>
-        {
-            command.Parameters.AddWithValue("@transactionId", transactionId);
-            command.Parameters.AddWithValue("@newDescription", newDescription);
-        });
-    }
-
-    // Metod för att ta bort en klient
-    public static void DeleteClient(int clientId)
-    {
-        string query = @"DELETE FROM clients WHERE id = @clientId";
-
-        ExecuteQuery(query, command =>
-        {
-            command.Parameters.AddWithValue("@clientId", clientId);
-        });
-    }
-
-    // Metod för att ta bort en transaktion
-    public static void DeleteTransaction(int transactionId)
-    {
-        string query = @"DELETE FROM transactions WHERE id = @transactionId";
-
-        ExecuteQuery(query, command =>
-        {
-            command.Parameters.AddWithValue("@transactionId", transactionId);
-        });
     }
 }

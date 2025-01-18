@@ -10,7 +10,7 @@ namespace Client {
     public class UserLoginService {
         public readonly string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
 
-        public async Task<Clients?> UserLogin(string username, string password, string email) {
+        public async Task<Clients?> UserLogin(string username, string passwordhash, string email) {
             
             try {
                 using (var Connection = new NpgsqlConnection(ConnectionString)) {
@@ -34,7 +34,7 @@ namespace Client {
                                 string StoredHashPassword = reader["passwordhash"].ToString();
 
                                 // Compare entered plain password with stored hashed password
-                                if (BCrypt.Net.BCrypt.Verify(password, StoredHashPassword)) {
+                                if (BCrypt.Net.BCrypt.Verify(passwordhash, StoredHashPassword)) {
 
                                     var LoggedInUser = new Clients {
 

@@ -1,0 +1,33 @@
+
+Deposit och register user för att använda i praktiken
+Användning i praktiken:
+Så här kan du använda dessa metoder i praktiken:
+
+Registrera en ny användare: När en användare registreras, får du tillbaka deras Id (som är client_id).
+
+UserRegistrationService userRegistrationService = new UserRegistrationService();
+var newUser = await userRegistrationService.RegisterNewUser("newuser", "password123", "user@example.com");
+
+if (newUser != null) {
+    // Ny användare registrerad, använd klientens ID för att skapa en transaktion
+    Console.WriteLine($"User registered with ID: {newUser.Id}");
+}else {
+    felmeddelande
+}
+
+
+Deposit transactions
+
+Transaction depositTransaction = new Transaction {
+    ClientId = newUser.Id,  // Klientens ID som vi fick vid registrering
+    amount = 100.50m,       // Belopp att sätta in
+    source = "Deposit for January" // Beskrivning av transaktionen
+};
+
+bool success = await DepositTransaction.DepositTransactions(depositTransaction);
+
+if (success) {
+    Console.WriteLine("Transaction successful!");
+} else {
+    Console.WriteLine("Transaction failed.");
+}

@@ -2,56 +2,46 @@ using System;
 using Npgsql;
 using CoreofApplication;
 using System.Threading.Tasks;
+using Client;
 
-// Raderar användarens transactions, 4! 
+// Funkar bra, raderar utifrån ID nummer !!!
 
 namespace CoreofApplication
 {
     public class DeleteTransaction
     {
-        public static async Task UsersDeleteTransactionAsync(string ConnectionString)
+        // Modified to take the Transaction object as a parameter and use client_id to delete transactions
+        public static async Task DeleteTransactions(Transaction transaction)
         {
-            Console.WriteLine("Enter the amount you want to delete:");
-            string DeleteUsersAmount = Console.ReadLine()!.ToLower();
-
-            Console.WriteLine("\nEnter the description you want to delete:");
-            string DeleteUserDescription = Console.ReadLine()!.ToLower();
-
-            if (decimal.TryParse(DeleteUsersAmount, out decimal AmountToDelete))
-            {
-                try
+            try
+            {             
+                using (var connection = Connection.GetConnection()) // Use Connection.GetConnection()
                 {
-                    using (var connection = new NpgsqlConnection(ConnectionString))
+                    await connection.OpenAsync();
+
+                    // Use client_id to delete transactions associated with a client
+                    string deleteQuery = "DELETE FROM transactions WHERE client_id = @ClientId";
+
+                    using (var cmd = new NpgsqlCommand(deleteQuery, connection))
                     {
-                        await connection.OpenAsync();
+                        // Use the ClientId from the Transaction object for the query
+                        cmd.Parameters.AddWithValue("@clientId", transaction.ClientId);
 
-                        string deleteQuery = "DELETE FROM transactions WHERE amount = @amount AND description = @description";
-
-                        using (var cmd = new NpgsqlCommand(deleteQuery, connection))
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                        if (rowsAffected > 0)
                         {
-                            cmd.Parameters.AddWithValue("@amount", AmountToDelete);
-                            cmd.Parameters.AddWithValue("@description", DeleteUserDescription);
-
-                            int rowsAffected = await cmd.ExecuteNonQueryAsync();
-                            if (rowsAffected > 0)
-                            {
-                                Console.WriteLine("Transaction deleted successfully!");
-                            }
-                            else
-                            {
-                                Console.WriteLine("No transaction found with the specified amount and description.");
-                            }
+                            Console.WriteLine("Transactions deleted successfully!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("No transactions found for the specified client ID.");
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Please enter a valid amount.");
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
     }

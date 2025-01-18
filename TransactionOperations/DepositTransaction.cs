@@ -1,54 +1,47 @@
 using System;
+using System.Threading.Tasks;
 using Npgsql;
 using CoreofApplication;
-using System.Threading.Tasks;
+using Client;
+using CoreofApplication; 
 
-// Sparar transaktionerna till en databas, 3! 
-
+// Funkar som den ska!! testad i main
+ 
 namespace CoreofApplication
 {
+    // A class to handle the database operation for depositing transactions
     public class DepositTransaction
     {
         // Asynchronous method to deposit money into the user's account
-        public static async Task UsersMoneyDeposit(string ConnectionString, int ClientId)
+        public static async Task<bool> DepositTransactions(Transaction transaction)
         {
-            Console.WriteLine("Write the amount of money you want to deposit:");
-            string userInput = Console.ReadLine()!.ToLower();
-
-            if (decimal.TryParse(userInput, out decimal Amount))
+            try
             {
-                Console.WriteLine("Where does the money come from? (Salary, Loan, Sale, etc.)");
-                string Source = Console.ReadLine()!;
-
-                try
+                using (var connection = Connection.GetConnection()) // Use Connection.GetConnection()
                 {
-                    using (var connection = new NpgsqlConnection(ConnectionString))
+                    await connection.OpenAsync();
+
+                    string sqlQuery = "INSERT INTO transactions (client_id, transaction_date, amount, description) " +
+                                      "VALUES (@client_id, @transaction_date, @amount, @description)";
+
+                    using (var cmd = new NpgsqlCommand(sqlQuery, connection))
                     {
-                        await connection.OpenAsync();
+                        cmd.Parameters.AddWithValue("@client_id", transaction.ClientId);
+                        cmd.Parameters.AddWithValue("@transaction_date", DateTime.Now);  // Assuming current date as the transaction date
+                        cmd.Parameters.AddWithValue("@amount", transaction.amount);
+                        cmd.Parameters.AddWithValue("@description", transaction.source);
 
-                        string sqlQuery = "INSERT INTO transactions (client_id, transaction_date, amount, description) " +
-                                          "VALUES (@clientId, @transactionDate, @amount, @description)";
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync(); // Execute the SQL query
 
-                        using (var cmd = new NpgsqlCommand(sqlQuery, connection))
-                        {
-                            cmd.Parameters.AddWithValue("@clientId", ClientId);
-                            cmd.Parameters.AddWithValue("@transactionDate", DateTime.Now);
-                            cmd.Parameters.AddWithValue("@amount", Amount);
-                            cmd.Parameters.AddWithValue("@description", Source);
-
-                            await cmd.ExecuteNonQueryAsync(); // Insert the transaction
-                            Console.WriteLine("\nThe deposit is successful. Let's continue!");
-                        }
+                        // Return true if the transaction was successfully inserted
+                        return rowsAffected > 0;
                     }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("The amount is invalid. Enter a valid amount!");
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return false;
             }
         }
     }

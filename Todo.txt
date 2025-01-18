@@ -1,4 +1,24 @@
 Filen innehåller allmänt för vad som ska göras i denna uppgiften
 
 Att göra: 
-Skapa 
+
+Queries INSERT, UPDATE, DELETE och SELECT.
+
+Exit application metoden ska implementeras 
+
+Fixa namespaces
+
+Integrera med användare för Transaction i RunTransaction filen
+och kalla den till main som Runlogin filen
+
+Gå igenom Alla transaktion operationerna och kolla om 
+det är rätt classer, columner osv 
+
+
+När du kopplar transaktioner med clienten, använd ID numret för att 
+hålla koll på vem som gjorde vad 
+
+// kolla efter rätt column namn och rätt egenskaps namn från Transaction
+
+Testa alla operationer i transactioner de står om de är
+färdiga eller inte.

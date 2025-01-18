@@ -1,202 +1,109 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoreofApplication;
-using Npgsql;
-using BCrypt;
-using dotenv.net;
 using Client;
 
 namespace CoreofApplication
 {
     class Program
     {
-        // Allting som ska användas ska anropas här, dela upp det och använd metoder så det blir mindre val
-        public static List<UserTransaction> TransactionList = new List<UserTransaction>();
-
         public static async Task Main(string[] args)
         {
+
+            var transaction = new Transaction
+            {
+                ClientId = 2,  // The Client ID to retrieve balance for
+                amount = 100.00m,  // Example amount (not necessary for retrieving balance)
+                source = "Loan"  // Example description (not necessary for retrieving balance)
+            };
+
+            // Instantiate the GetTransaction class
+            var getTransaction = new GetTransaction();
+
+            // Get the current balance for the client
+            decimal balance = await getTransaction.GetCurrentBalance(transaction);
+
+            // Print the balance to the console
+            Console.WriteLine($"The current balance for client {transaction.ClientId} is: {balance:C}");
+
+            // Initialize services
             Connection.TestConnection();
-            
             var postgresClientService = new PostgresClientService();
-            var userLogoutService = new UserLogoutService(); // Create instance for handling user logout and login change
+            var userLogoutService = new UserLogoutService();
+            var userService = new UserService(postgresClientService, userLogoutService);
 
             int LoginChoice;
             bool LoginBool = false;
 
-
+            // Login menu loop
             while (!LoginBool)
             {
-                DisplayMenu.DisplayLoginOptions(); // Users login options
+                DisplayMenu.DisplayLoginOptions(); // Display login options
 
                 string LogInInput = Console.ReadLine()!.ToLower();
 
                 if (int.TryParse(LogInInput, out LoginChoice))
                 {
-                    if (LoginChoice == 1)
+                    if (LoginChoice == 1) // Register a new user
                     {
-                        Console.Clear();
-                        Console.WriteLine("Enter your username for a new user:");
-                        string username = Console.ReadLine()!.ToLower();
-
-                        Console.WriteLine("Enter your password:");
-                        string passwordhash = Console.ReadLine()!.ToLower();
-
-                        Console.WriteLine("Enter your email:");
-                        string email = Console.ReadLine()!.ToLower();
-
-                        string HashedPassword = BCrypt.Net.BCrypt.HashPassword(passwordhash);
-
-                        var newClient = await postgresClientService.RegisterNewUser(username, passwordhash, email);
-
-                        if (newClient != null)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("\nUser registered successfully!");
-                            Console.WriteLine($"ID: {newClient.Id}");
-                            Console.WriteLine($"Username: {newClient.username}");
-                            Console.WriteLine($"Email: {newClient.email}");
-                        }
-                        else
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Registration failed, please try again");
-                        }
+                        await userService.RegisterUser();
                     }
-                    else if (LoginChoice == 2)
+                    else if (LoginChoice == 2) // Log in an existing user
                     {
-                        Console.Clear();
-                        Console.WriteLine("Enter your username or email to login: ");
-                        string UserNameOrEmail = Console.ReadLine()!.ToLower();
-
-                        Console.WriteLine("Enter your password: ");
-                        string LoginPassword = Console.ReadLine()!.ToLower();
-
-                        var LoggedInUser = await postgresClientService.UserLogin(UserNameOrEmail, LoginPassword, UserNameOrEmail);
-
-                        if (LoggedInUser != null)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Login successful!");
-                            Console.WriteLine($"Welcome, {LoggedInUser.username}!");
-                            LoginBool = true;
-                        }
-                        else
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Login failed.. try again!");
-                        }
+                        await userService.LoginUser();
+                        LoginBool = true; // Login successful
                     }
-                    else if (LoginChoice == 3)
+                    else if (LoginChoice == 3) // Log out the current user and switch
                     {
-                        Console.Clear();
-                        Console.WriteLine("Logging out current user...");
-                        userLogoutService.UserLogout(); // Log out the current user
-
-                        Console.WriteLine("\nPlease enter credentials for the new user:");
-                        Console.WriteLine("Enter your username or email:");
-                        string usernameOrEmail = Console.ReadLine()!.ToLower();
-
-                        Console.WriteLine("Enter your password:");
-                        string password = Console.ReadLine()!.ToLower();
-
-                        bool loginSuccess = await userLogoutService.UserChangeLogin(usernameOrEmail, password, usernameOrEmail);
-
-                        if (loginSuccess)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Successfully logged in with new credentials.");
-                            LoginBool = true;
-                        }
-                        else
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Failed to log in with the new credentials.");
-                        }
+                        await userService.SwitchUser();
                     }
-                    else if (LoginChoice == 4)
+                    else if (LoginChoice == 4) // Log out the current user
                     {
-                        Console.Clear();
-                        Console.WriteLine("Logging out from the current user.");
-                        postgresClientService.UserLogout(); // Log out the current user
-
-                        Console.WriteLine("\nWould you like to log in as another user? Yes or No?");
-                        string UserRespons = Console.ReadLine()!.ToLower();
-
-                        if (UserRespons == "yes")
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Enter the username or email for the new user:");
-                            string usernameOrEmail = Console.ReadLine()!.ToLower();
-
-                            Console.WriteLine("Enter the password:");
-                            string password = Console.ReadLine()!.ToLower();
-
-                            Clients? newClient = await postgresClientService.LogoutAndSwitchUser(usernameOrEmail, password, usernameOrEmail);
-
-                            if (newClient != null)
-                            {
-                                Console.Clear();
-                                Console.WriteLine($"Successfully switched to {newClient.username}.");
-                            }
-                            else
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Failed to login with the new credentials.. returning to login menu..");
-                                LoginBool = false;
-                            }
-                        }
-                        else
-                        {
-                            Console.Clear();
-                            Console.WriteLine("You have chosen to exit. Exiting SecureSwebank..");
-                            LoginBool = false; // Exit the main menu
-                        }
+                        userService.LogoutUser();
+                        LoginBool = false; // Exit the login loop
                     }
                 }
             }
 
+            // Main menu loop
             bool stillrunning = true;
-            int usersmenuoptions;
-
             while (stillrunning)
             {
                 Console.Clear();
                 DisplayMenu.DisplayMainMenu();
 
                 string GetUserInput = Console.ReadLine()!.ToLower();
+                int usersmenuoptions;
 
                 if (int.TryParse(GetUserInput, out usersmenuoptions))
                 {
                     switch (usersmenuoptions)
                     {
                         case 1:
+                            Console.WriteLine("Transaction operations here");
                             break;
 
                         case 2:
-                            UserTransactionMethods.UsersMoneyDeposit(TransactionList);
+                            Console.WriteLine("Transaction operations here");
                             break;
 
                         case 3:
-                            UserTransactionMethods.UsersDeleteTransaction(TransactionList);
+                            Console.WriteLine("Transaction operations here");
                             break;
 
                         case 4:
-                            UserTransactionMethods.UsersCurrentBalance(TransactionList);
+                            Console.WriteLine("Transaction operations here");
                             break;
 
                         case 5:
-                            UserTransactionMethods.UsersMoneySpent(TransactionList);
+                            Console.WriteLine("Transaction operations here");
                             break;
 
                         case 6:
-                            UserTransactionMethods.UsersMoneyIncome(TransactionList);
-                            break;
-
-                        case 7:
                             DisplayMenu.UserNeedHelp();
                             break;
 
-                        case 8:
+                        case 7:
                             Console.Clear();
                             Console.WriteLine("Exiting SecureSwe Bank...");
                             stillrunning = false;

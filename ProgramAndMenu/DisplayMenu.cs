@@ -28,14 +28,13 @@ namespace CoreofApplication // Namespace puts together codes.
             Console.WriteLine("SecureSwe Bank - Start Managing Your Finances!");
             
             Console.WriteLine("\nChoose between 1-7!");
-            Console.WriteLine("[1] - Users, for next uppgift");
-            Console.WriteLine("[2] - Make a deposit!");
-            Console.WriteLine("[3] - Delete transactions!");
-            Console.WriteLine("[4] - View your current account balance!");
-            Console.WriteLine("[5] - See money spent yearly, monthly, weekly, and daily!");
-            Console.WriteLine("[6] - See income by year, monthly, weekly, and daily!");
-            Console.WriteLine("[7] - Not understanding the program? Get help!");
-            Console.WriteLine("[8] - Exit the program!");
+            Console.WriteLine("[1] - Make a deposit!");
+            Console.WriteLine("[2] - Delete transactions!");
+            Console.WriteLine("[3] - View your current account balance!");
+            Console.WriteLine("[4] - See money spent yearly, monthly, weekly, and daily!");
+            Console.WriteLine("[5] - See income by year, monthly, weekly, and daily!");
+            Console.WriteLine("[6] - Not understanding the program? Get help!");
+            Console.WriteLine("[7] - Exit the program!");
         }
 
         public static void DisplayIncomeMenu() {

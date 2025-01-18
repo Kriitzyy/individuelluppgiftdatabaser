@@ -42,3 +42,4 @@ Things to include in the project, for G
 - Log out (and be able to switch users by logging in again)
 - All functionality from previous task, linked per-user
 
+ 

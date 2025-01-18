@@ -1,35 +1,40 @@
 using System;
 using Npgsql;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Client;
 
-// Räknar ut användarens current balance, 5!
+// Funkar som den ska!! testad i main
+// Id numret håller koll vem de e som ska kolla 
+// current balance 
 
 namespace CoreofApplication
 {
     public class GetTransaction
     {
-        private readonly string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
-
-        // Retrieve transactions for a specific user by client_id
-        public async Task<decimal> GetUserCurrentBalance(int ClientId)
+        // Retrieve current balance of a user by client_id
+        public async Task<decimal> GetCurrentBalance(Transaction transaction)
         {
             decimal currentBalance = 0;
 
             try
             {
-                using (var connection = new NpgsqlConnection(ConnectionString))
+                // Open a connection to the database using the GetConnection method
+                using (var connection = Connection.GetConnection())
                 {
                     await connection.OpenAsync();
 
-                    string sqlQuery = "SELECT SUM(amount) FROM transactions WHERE client_id = @clientId";
+                    // Query to sum all transactions of a specific client
+                    string sqlQuery = "SELECT SUM(amount) FROM transactions WHERE client_id = @client_id";
 
                     using (var cmd = new NpgsqlCommand(sqlQuery, connection))
                     {
-                        cmd.Parameters.AddWithValue("@clientId", ClientId);
+                        // Use the clientId from the passed transaction object
+                        cmd.Parameters.AddWithValue("@client_id", transaction.ClientId);  // Correct access to ClientId
 
                         // Execute the query and retrieve the sum of amounts
                         var result = await cmd.ExecuteScalarAsync();
+
+                        // If the result is not DBNull, assign the value to currentBalance
                         if (result != DBNull.Value)
                         {
                             currentBalance = Convert.ToDecimal(result);
@@ -39,19 +44,11 @@ namespace CoreofApplication
             }
             catch (Exception ex)
             {
+                // In case of error, print the exception message
                 Console.WriteLine($"Error retrieving balance: {ex.Message}");
             }
 
-            return currentBalance;
+            return currentBalance;  // Return the calculated balance
         }
     }
 }
-
-/* 
-    client_id INT NOT NULL,
-    transaction_date DATE NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    description TEXT,
-    CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES clients(id)
-);
-*/ 

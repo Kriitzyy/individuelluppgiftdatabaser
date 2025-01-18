@@ -1,22 +1,21 @@
 using Npgsql;
 using System.Threading.Tasks;
-using Npgsql; 
-
-// Användarens inkomst för år, månad, vecka, dag. 2! 
+using System;
+// Columnerna är fel ändra, startdate, end date finns ej
+// kanske periods columner? 
 namespace CoreofApplication
 {
     public class IncomeTransaction
     {
-        private static readonly string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
-
         // Generalized method to get total income for a user within a given date range
-        public static async Task<decimal> GetIncomeAsync(int clientId, DateTime startDate, DateTime endDate)
+        public static async Task<decimal> GetIncomePeriods(int ClientId, DateTime startDate, DateTime endDate)
         {
             decimal totalIncome = 0;
 
             try
             {
-                using (var connection = new NpgsqlConnection(ConnectionString))
+                // Use the GetConnection method to get a connection
+                using (var connection = Connection.GetConnection())
                 {
                     await connection.OpenAsync();
 
@@ -26,7 +25,7 @@ namespace CoreofApplication
 
                     using (var cmd = new NpgsqlCommand(sqlQuery, connection))
                     {
-                        cmd.Parameters.AddWithValue("@clientId", clientId);
+                        cmd.Parameters.AddWithValue("@clientId", ClientId);
                         cmd.Parameters.AddWithValue("@startDate", startDate);
                         cmd.Parameters.AddWithValue("@endDate", endDate);
 
