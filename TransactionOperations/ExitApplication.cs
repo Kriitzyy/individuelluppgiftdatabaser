@@ -1,1 +1,0 @@
-// Exit application här, lämnar hela appen

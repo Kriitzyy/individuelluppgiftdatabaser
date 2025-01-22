@@ -15,6 +15,7 @@ namespace CoreofApplication
         // Asynchronous method to deposit money into the user's account
         public static async Task<bool> DepositTransactions(Transaction transaction)
         {
+            
             try
             {
                 using (var connection = Connection.GetConnection()) // Use Connection.GetConnection()
@@ -43,6 +44,45 @@ namespace CoreofApplication
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 return false;
             }
+        }
+           public static async Task<List<Transaction>> GetTransactionsByClientId(int clientId)
+        {
+            var transactions = new List<Transaction>();
+
+            try
+            {
+                using (var connection = Connection.GetConnection())
+                {
+                    await connection.OpenAsync();
+
+                    string sqlQuery = "SELECT transaction_date, amount, description " +
+                                      "FROM transactions WHERE client_id = @client_id";
+
+                    using (var cmd = new NpgsqlCommand(sqlQuery, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@client_id", clientId);
+
+                        using (var reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                transactions.Add(new Transaction
+                                {
+                                    TransactionDate = reader.GetDateTime(0),
+                                    amount = reader.GetDecimal(1),
+                                    source = reader.GetString(2)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while fetching transactions: {ex.Message}");
+            }
+
+            return transactions; // Return the list of transactions
         }
     }
 }

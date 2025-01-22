@@ -15,35 +15,21 @@ namespace Client {
         // Register new user
         public async Task<Clients?> RegisterNewUser(string username, string passwordhash, string email) { 
 
-            return await UserRegistrationObject.RegisterNewUser(username, passwordhash, email);
+           // return await UserRegistrationObject.RegisterNewUser(username, passwordhash, email);
+           return null;
         }
 
         // User login
-        public async Task<Clients?> UserLogin(string username, string passwordhash, string email) {
+        public async Task<Clients?> UserLogin(string usernameOrEmail, string password) {
 
-            return await UserLoginObject.UserLogin(username, passwordhash, email);
+            return await UserLoginObject.UserLogin(usernameOrEmail, password);
         }
 
         // Logout and switch to another user
-        public async Task<Clients?> LogoutAndSwitchUser(string username, string passwordhash, string email) {
-
-            LoggedInUser = null;
-            Console.WriteLine("Logged out. You can now switch to another user.");
-
-            var newUser = await UserLoginObject.UserLogin(username, passwordhash, email);
-
-            if (newUser != null) {
-
-                LoggedInUser = newUser;
-                Console.WriteLine($"Successfully switched to user: {newUser.username}");
-                return newUser;
+        public async Task<Clients?> LogoutAndSwitchUser(string usernameOrEmail, string password) {
+            
+                        return null;
             }
-            else {
-
-                Console.WriteLine("Failed to switch user. Invalid login credentials.");
-                return null;
-            }
-        }
 
         // Log out the user
         public Clients? UserLogout() {

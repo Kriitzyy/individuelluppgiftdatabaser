@@ -32,6 +32,7 @@ namespace Client {
                             if (await Reader.ReadAsync()) {  // Läs en gång för att få resultatet
 
                                 var ClientData = new Clients {
+                                    
                                     Id = Reader.GetInt32(0), // Hämtar ID från databasens första kolumn
                                     username = Reader.GetString(1), // Hämtar användarnamn från andra kolumn
                                     passwordhash = Reader.GetString(2), // Hämtar hashad lösenord från tredje kolumn

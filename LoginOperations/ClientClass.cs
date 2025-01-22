@@ -9,6 +9,7 @@ namespace Client {
     public string username { get; set; }
     public string passwordhash { get; set; }
     public string email { get; set; }
+
     
     }
 }

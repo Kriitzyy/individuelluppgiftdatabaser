@@ -20,12 +20,12 @@ namespace CoreofApplication
                     await connection.OpenAsync();
 
                     // Use client_id to delete transactions associated with a client
-                    string deleteQuery = "DELETE FROM transactions WHERE client_id = @ClientId";
+                    string deleteQuery = "DELETE FROM transactions WHERE client_id = @client_id";
 
                     using (var cmd = new NpgsqlCommand(deleteQuery, connection))
                     {
                         // Use the ClientId from the Transaction object for the query
-                        cmd.Parameters.AddWithValue("@clientId", transaction.ClientId);
+                        cmd.Parameters.AddWithValue("@client_id", transaction.ClientId);
 
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
                         if (rowsAffected > 0)

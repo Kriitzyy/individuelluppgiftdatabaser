@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using Npgsql;
 using Client; // Import the namespace where your Transaction class is located
 
-// Är columnerna fel eller används dom dör datum? 
 namespace CoreofApplication
 {
     public class MoneySpentCalculator
     {
         // Method to calculate total money spent by a user, based on the Transaction object and specific time period
         public static async Task<decimal> MoneySpentPeriods(Transaction transaction, string periodType, int? year = null, 
-        int? month = null, int? week = null, DateTime? day = null)
+        int? month = null, int? week = null, DateTime? day = null, bool includeDeleted = false) // Add includeDeleted flag
         {
             decimal totalSpent = 0;
 
@@ -22,7 +21,13 @@ namespace CoreofApplication
                     await connection.OpenAsync();
 
                     // Base SQL query for selecting total money spent by client
-                    string sqlQuery = "SELECT SUM(amount) FROM transactions WHERE client_id = @clientId AND amount < 0";
+                    string sqlQuery = "SELECT SUM(amount) FROM transactions WHERE client_id = @client_id AND amount < 0";
+
+                    // Include condition for deleted transactions if includeDeleted is true
+                    if (includeDeleted)
+                    {
+                        sqlQuery += " AND is_deleted = TRUE"; // Assuming "is_deleted" is the column indicating deleted transactions
+                    }
 
                     // Append conditions based on the periodType
                     if (periodType == "year" && year.HasValue)
@@ -45,7 +50,7 @@ namespace CoreofApplication
                     using (var cmd = new NpgsqlCommand(sqlQuery, connection))
                     {
                         // Add the client ID (from the Transaction object) as a parameter
-                        cmd.Parameters.AddWithValue("@clientId", transaction.ClientId);
+                        cmd.Parameters.AddWithValue("@client_id", transaction.ClientId);
 
                         // Add the period parameters based on the selected periodType
                         if (year.HasValue) cmd.Parameters.AddWithValue("@year", year.Value); 

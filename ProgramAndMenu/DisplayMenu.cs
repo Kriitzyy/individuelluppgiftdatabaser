@@ -15,13 +15,7 @@ namespace CoreofApplication // Namespace puts together codes.
             Console.WriteLine("[3] - log out, and change user!");
             Console.WriteLine("[4] - Exit");
         }
-        public static void DisplayLoginAndOut() {
-
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-
-        }
+        
 
         public static void DisplayMainMenu() {
 
@@ -67,15 +61,12 @@ namespace CoreofApplication // Namespace puts together codes.
             Console.WriteLine("Ensure you are using the program step by step!");
             Console.WriteLine("Start with number 1 and end with number 7!");
             Console.WriteLine("Hope the information helps!");
+            Console.WriteLine("WARNING!! My program is case-sensitive, so please write correctly");
+
             Console.WriteLine("Write your feedback so we can improve our bank!");
 
             Console.WriteLine("\nRegards, SecureSwe Bank!");
         }
-          public static void UserNeedHelp() { 
-   
-            DisplayMenu.DisplayUserNeedHelp();
-
-            string Feedback = Console.ReadLine()!.ToLower();
-        }
+          
     }
 }

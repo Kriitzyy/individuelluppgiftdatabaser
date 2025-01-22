@@ -7,25 +7,10 @@ namespace CoreofApplication
 {
     class Program
     {
+        public static Clients? LoggedInUser = null; // Holds the current logged-in user state
+
         public static async Task Main(string[] args)
         {
-
-            var transaction = new Transaction
-            {
-                ClientId = 2,  // The Client ID to retrieve balance for
-                amount = 100.00m,  // Example amount (not necessary for retrieving balance)
-                source = "Loan"  // Example description (not necessary for retrieving balance)
-            };
-
-            // Instantiate the GetTransaction class
-            var getTransaction = new GetTransaction();
-
-            // Get the current balance for the client
-            decimal balance = await getTransaction.GetCurrentBalance(transaction);
-
-            // Print the balance to the console
-            Console.WriteLine($"The current balance for client {transaction.ClientId} is: {balance:C}");
-
             // Initialize services
             Connection.TestConnection();
             var postgresClientService = new PostgresClientService();
@@ -46,68 +31,101 @@ namespace CoreofApplication
                 {
                     if (LoginChoice == 1) // Register a new user
                     {
-                        await userService.RegisterUser();
+                        await userService.CallingRegisterUser();
                     }
                     else if (LoginChoice == 2) // Log in an existing user
                     {
-                        await userService.LoginUser();
-                        LoginBool = true; // Login successful
+                        var registeredUser = await userService.CallingLoginUser();
+
+                        if (Program.LoggedInUser != null) // Check against UserService.LoggedInUser
+                        {
+                            Console.WriteLine($"Login is successful! Welcome {Program.LoggedInUser.username}.");
+                            LoginBool = true; // Exit the login menu loop after successful login
+                        }
+                        else
+                        {
+                            Console.WriteLine("Login failed, please try again.");
+                        }
                     }
                     else if (LoginChoice == 3) // Log out the current user and switch
                     {
-                        await userService.SwitchUser();
+                        await userService.CallingUserChange();
+
+                        if (Program.LoggedInUser != null)
+                        {
+                            Console.WriteLine($"Successfully switched to {Program.LoggedInUser.username}.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("No user is logged in after switching.");
+                        }
                     }
                     else if (LoginChoice == 4) // Log out the current user
                     {
-                        userService.LogoutUser();
-                        LoginBool = false; // Exit the login loop
+                        userService.CallingLogoutUser();
+
+                        if (Program.LoggedInUser == null)
+                        {
+                            Console.WriteLine("You have successfully logged out.");
+                        }
                     }
+                }
+                else
+                {
+                    Console.WriteLine("Please enter a valid option (1-4).");
                 }
             }
 
             // Main menu loop
-            bool stillrunning = true;
-            while (stillrunning)
+            bool stillRunning = true;
+            while (stillRunning)
             {
                 Console.Clear();
                 DisplayMenu.DisplayMainMenu();
 
-                string GetUserInput = Console.ReadLine()!.ToLower();
-                int usersmenuoptions;
-
-                if (int.TryParse(GetUserInput, out usersmenuoptions))
+                if (Program.LoggedInUser == null)
                 {
-                    switch (usersmenuoptions)
+                    Console.WriteLine("Please log in to access the main menu.");
+                    break; // Exit the loop and redirect to login
+                }
+                
+                string GetUserInput = Console.ReadLine()!.ToLower();
+                int usersMenuOptions;
+                
+
+                if (int.TryParse(GetUserInput, out usersMenuOptions))
+                {
+                    switch (usersMenuOptions)
                     {
                         case 1:
-                            Console.WriteLine("Transaction operations here");
+                            await RunTransactions.CallingDeposit();
                             break;
 
                         case 2:
-                            Console.WriteLine("Transaction operations here");
+                            await RunTransactions.CallingDelete();
                             break;
 
                         case 3:
-                            Console.WriteLine("Transaction operations here");
+                            await RunTransactions.CallingCurrentBalance();
                             break;
 
                         case 4:
-                            Console.WriteLine("Transaction operations here");
+                            await RunTransactions.CallingMoneySpent();
                             break;
 
                         case 5:
-                            Console.WriteLine("Transaction operations here");
+                            await RunTransactions.CallingIncomePeriods();
                             break;
 
                         case 6:
-                            DisplayMenu.UserNeedHelp();
+                            DisplayMenu.DisplayUserNeedHelp();
                             break;
 
                         case 7:
                             Console.Clear();
                             Console.WriteLine("Exiting SecureSwe Bank...");
-                            stillrunning = false;
-                            break;
+                            stillRunning = false;
+                            return;
 
                         default:
                             Console.WriteLine("Please ensure entering a choice between 1-7!");

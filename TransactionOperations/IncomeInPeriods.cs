@@ -20,12 +20,12 @@ namespace CoreofApplication
                     await connection.OpenAsync();
 
                     // SQL query to sum up positive transaction amounts (income) within the date range
-                    string sqlQuery = "SELECT SUM(amount) FROM transactions WHERE client_id = @clientId " +
+                    string sqlQuery = "SELECT SUM(amount) FROM transactions WHERE client_id = @client_id " +
                                       "AND amount > 0 AND transaction_date >= @startDate AND transaction_date <= @endDate";
 
                     using (var cmd = new NpgsqlCommand(sqlQuery, connection))
                     {
-                        cmd.Parameters.AddWithValue("@clientId", ClientId);
+                        cmd.Parameters.AddWithValue("@client_id", ClientId);
                         cmd.Parameters.AddWithValue("@startDate", startDate);
                         cmd.Parameters.AddWithValue("@endDate", endDate);
 
