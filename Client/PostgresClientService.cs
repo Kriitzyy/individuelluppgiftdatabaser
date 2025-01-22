@@ -1,47 +1,46 @@
 using System;
 using System.Threading.Tasks;
+using CoreofApplication;
 using Npgsql;
 
 namespace Client {
-
+    // Klassen implementerar ett klientservicegränssnitt
     public class PostgresClientService : IClientService {
 
-        private static Clients? LoggedInUser = null;
+        // Anslutningssträng för PostgreSQL-databasen
         public readonly string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
 
+        // Objekt för användarregistreringstjänsten
         private readonly UserRegistrationService UserRegistrationObject = new UserRegistrationService();
+
+        // Objekt för användarinloggningstjänsten
         private readonly UserLoginService UserLoginObject = new UserLoginService();
 
-        // Register new user
+        // Register new user metod
         public async Task<Clients?> RegisterNewUser(string username, string passwordhash, string email) { 
 
-           // return await UserRegistrationObject.RegisterNewUser(username, passwordhash, email);
-           return null;
+            return await UserRegistrationObject.RegisterNewUser(username, passwordhash, email);
         }
 
-        // User login
+        // Metod för användarinloggning
         public async Task<Clients?> UserLogin(string usernameOrEmail, string password) {
-
+            // Anropar UserLoginService för att logga in användaren
             return await UserLoginObject.UserLogin(usernameOrEmail, password);
         }
 
-        // Logout and switch to another user
+        // Metod för att logga ut och byta till en annan användare (ej implementerad)
         public async Task<Clients?> LogoutAndSwitchUser(string usernameOrEmail, string password) {
             
-                        return null;
-            }
-
-        // Log out the user
-        public Clients? UserLogout() {
-
-            LoggedInUser = null;
+            // Returnerar null då funktionen inte är implementerad
             return null;
         }
 
-        // Get the current logged-in user
-        public Clients? GetLoggedInUser() {
-            
-            return LoggedInUser;
+        // Metod för att logga ut användaren
+        public Clients? UserLogout() {
+            // Sätter den inloggade användaren i Program till null, vilket betyder att ingen användare är inloggad
+            Program.LoggedInUser = null;
+            return null;
         }
+
     }
 }

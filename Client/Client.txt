@@ -1,5 +1,0 @@
-// Här ska det finnas information eller annat, informationen ska bara handla om innehållet i foldern client 
-
-Att göra: 
-Koppla transactionerna till användare 
-

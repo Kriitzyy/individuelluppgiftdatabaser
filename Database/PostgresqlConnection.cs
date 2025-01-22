@@ -1,39 +1,30 @@
 using System;
-using System.IO;  // To read the SQL file
+using System.IO;  
 using Npgsql;
 
-public class Connection
-{
-    // Privat statisk anslutningssträng som används internt
+// En fil med connection stringen i en metod 
+// Eftersom att jag slipper då skriva Connection string hela tiden
+// Anropar jag metoden istället
+
+// Connection Class
+public class Connection {
+
+    // Privat variabel som lagrar anslutningssträngen
     private static string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
 
     // Publik metod som returnerar en ny databasanslutning
-    public static NpgsqlConnection GetConnection()
-    {
-        try
-        {
-            return new NpgsqlConnection(ConnectionString);
+    public static NpgsqlConnection GetConnection() { 
+
+        try {
+
+            // Skapar och returnerar ett nytt NpgsqlConnection-objekt med hjälp av anslutningssträngen
+            return new NpgsqlConnection(ConnectionString); 
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
+            
+            // Hanterar fel om det skulle uppstå vid anslutning
             throw new Exception("Error creating database connection: " + ex.Message);
         }
     }
 
-    // Exempel på metod för att testa anslutningen
-    public static void TestConnection()
-    {
-        using (var conn = GetConnection())
-        {
-            try
-            {
-                conn.Open();
-                Console.WriteLine("Connection to PostgreSQL is successful!");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Connection failed: {ex.Message}");
-            }
-        }
-    }
 }

@@ -1,78 +1,86 @@
 using Npgsql;
 using System.Threading.Tasks;
 using System;
-// Columnerna är fel ändra, startdate, end date finns ej
-// kanske periods columner? 
-namespace CoreofApplication
-{
-    public class IncomeTransaction
-    {
-        // Generalized method to get total income for a user within a given date range
-        public static async Task<decimal> GetIncomePeriods(int ClientId, DateTime startDate, DateTime endDate)
-        {
+
+// Denna fil hanterar användarens Income
+// I perioder, år, månad, vecka och dag
+
+namespace CoreofApplication {
+
+    public class IncomeTransaction {
+
+        // Metod för Income perioder 
+        public static async Task<decimal> GetIncomePeriods(int ClientId, DateTime startDate, DateTime endDate) {
+
             decimal totalIncome = 0;
 
-            try
-            {
-                // Use the GetConnection method to get a connection
-                using (var connection = Connection.GetConnection())
-                {
+            try {
+
+                // Hämtar connection
+                using (var connection = Connection.GetConnection()) {
+                    
+                    // Öppnar connection
                     await connection.OpenAsync();
 
-                    // SQL query to sum up positive transaction amounts (income) within the date range
+                    // SQL query för att räkna ihop positiva transaktioner (inkomst) inom viss datum
                     string sqlQuery = "SELECT SUM(amount) FROM transactions WHERE client_id = @client_id " +
                                       "AND amount > 0 AND transaction_date >= @startDate AND transaction_date <= @endDate";
 
-                    using (var cmd = new NpgsqlCommand(sqlQuery, connection))
-                    {
+                    using (var cmd = new NpgsqlCommand(sqlQuery, connection)) {
+
                         cmd.Parameters.AddWithValue("@client_id", ClientId);
                         cmd.Parameters.AddWithValue("@startDate", startDate);
                         cmd.Parameters.AddWithValue("@endDate", endDate);
 
-                        // Execute query and retrieve the total income
+                        // Kör queryn och hämta totala inkomst
                         var result = await cmd.ExecuteScalarAsync();
 
-                        // If result is not null, assign the value to totalIncome
-                        if (result != DBNull.Value)
-                        {
+    	                // Om resultat inte är null ge Value till totaincome
+                        if (result != DBNull.Value) {
+
                             totalIncome = Convert.ToDecimal(result);
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
+
+                // Om operationen misslyckades 
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }
 
             return totalIncome;
         }
 
-        // Helper method to get the start and end dates for a specific period
-        public static (DateTime startDate, DateTime endDate) GetPeriods(string period)
-        {
+        // Metod för att hämta start och slut datum för specifika perioder
+        public static (DateTime startDate, DateTime endDate) GetPeriods(string period) {
+
             DateTime currentDate = DateTime.Now;
             DateTime startDate = DateTime.MinValue;
             DateTime endDate = DateTime.MaxValue;
 
-            switch (period.ToLower())
-            {
+            switch (period.ToLower()) {
+
                 case "year":
                     startDate = new DateTime(currentDate.Year, 1, 1);
                     endDate = new DateTime(currentDate.Year, 12, 31, 23, 59, 59);
                     break;
+
                 case "month":
                     startDate = new DateTime(currentDate.Year, currentDate.Month, 1);
                     endDate = startDate.AddMonths(1).AddSeconds(-1);
                     break;
+
                 case "week":
                     startDate = currentDate.AddDays(-(int)currentDate.DayOfWeek); // Sunday of the current week
                     endDate = startDate.AddDays(6); // Saturday of the current week
                     break;
+
                 case "day":
                     startDate = currentDate.Date;
                     endDate = currentDate.Date.AddDays(1).AddSeconds(-1); // Last second of the day
                     break;
+
                 default:
                     throw new ArgumentException("Invalid period type. Use 'year', 'month', 'week', or 'day'.");
             }

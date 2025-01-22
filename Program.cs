@@ -3,142 +3,170 @@ using System.Threading.Tasks;
 using CoreofApplication;
 using Client;
 
-namespace CoreofApplication
-{
-    class Program
-    {
-        public static Clients? LoggedInUser = null; // Holds the current logged-in user state
+namespace CoreofApplication {
 
-        public static async Task Main(string[] args)
-        {
-            // Initialize services
-            Connection.TestConnection();
-            var postgresClientService = new PostgresClientService();
-            var userLogoutService = new UserLogoutService();
-            var userService = new UserService(postgresClientService, userLogoutService);
+    class Program {
+
+        // Variabel som håller koll på den nuvarande inloggade användaren
+        public static Clients? LoggedInUser = null;
+
+        public static async Task Main(string[] args) {
+
+            // Initierar tjänstern
+            Connection.GetConnection(); // Skapar anslutning till databasen (För att säkerställa den funkar)
+            var postgresClientService = new PostgresClientService(); // Skapar instans av tjänst för att hantera klienter
+            var userLogoutService = new UserLogoutService(); // Skapar instans av tjänst för utloggning
+            var userService = new UserService(postgresClientService, userLogoutService); // Skapar användartjänst med de tidigare tjänsterna
 
             int LoginChoice;
             bool LoginBool = false;
 
-            // Login menu loop
-            while (!LoginBool)
-            {
-                DisplayMenu.DisplayLoginOptions(); // Display login options
+            // Loop för inloggningsmeny
+            while (!LoginBool) {
+
+                // Visar alternativ för inloggning
+                DisplayMenu.DisplayLoginOptions();
 
                 string LogInInput = Console.ReadLine()!.ToLower();
 
-                if (int.TryParse(LogInInput, out LoginChoice))
-                {
-                    if (LoginChoice == 1) // Register a new user
-                    {
+                // Omvandlar användarens inmatning till ett heltal
+                if (int.TryParse(LogInInput, out LoginChoice)) {
+
+                    if (LoginChoice == 1) {
+
+                        // Om användaren väljer alternativ 1, kör registrering
                         await userService.CallingRegisterUser();
                     }
-                    else if (LoginChoice == 2) // Log in an existing user
-                    {
+                    else if (LoginChoice == 2)  {
+
+                        // Om användaren väljer alternativ 2, kör inloggning
                         var registeredUser = await userService.CallingLoginUser();
 
-                        if (Program.LoggedInUser != null) // Check against UserService.LoggedInUser
-                        {
-                            Console.WriteLine($"Login is successful! Welcome {Program.LoggedInUser.username}.");
-                            LoginBool = true; // Exit the login menu loop after successful login
+                        if (Program.LoggedInUser != null)  {
+
+                            // Om inloggning lyckades, sätt inloggningsstatus och avsluta inloggningsloopen
+                            LoginBool = true;
                         }
-                        else
-                        {
-                            Console.WriteLine("Login failed, please try again.");
+                        else {
+
+                            // Om inloggningen misslyckas 
+                            Console.WriteLine("Login failed, try again...");
                         }
                     }
-                    else if (LoginChoice == 3) // Log out the current user and switch
-                    {
+
+                    else if (LoginChoice == 3) {
+
+                        // Om användaren vill byta användare
                         await userService.CallingUserChange();
 
-                        if (Program.LoggedInUser != null)
-                        {
-                            Console.WriteLine($"Successfully switched to {Program.LoggedInUser.username}.");
+                        if (Program.LoggedInUser != null) {
+
+                            // Om bytet lyckades, visa det nya användarnamnet
+                            Console.WriteLine($"FChanged to: {Program.LoggedInUser.username}.");
                         }
-                        else
-                        {
-                            Console.WriteLine("No user is logged in after switching.");
+                        else {
+
+                            // Om inget användarnamn är inloggat efter bytet
+                            Console.WriteLine("Inget användarnamn är inloggat efter bytet.");
                         }
                     }
-                    else if (LoginChoice == 4) // Log out the current user
-                    {
-                        userService.CallingLogoutUser();
 
-                        if (Program.LoggedInUser == null)
-                        {
-                            Console.WriteLine("You have successfully logged out.");
-                        }
+                    else if (LoginChoice == 4) {
+
+                        // Om användaren vill avsluta programmet
+                        Console.WriteLine("Ending SecureSweBank!");
+                        Environment.Exit(0); // Stänger av programmet med en framgångskod
                     }
                 }
-                else
-                {
-                    Console.WriteLine("Please enter a valid option (1-4).");
+                else {
+
+                    // Om användaren inte har angett ett giltigt alternativ
+                    Console.WriteLine("Choose between 1-4.");
                 }
             }
 
-            // Main menu loop
+            // Loop för huvudmenyn
             bool stillRunning = true;
-            while (stillRunning)
-            {
-                Console.Clear();
-                DisplayMenu.DisplayMainMenu();
 
-                if (Program.LoggedInUser == null)
-                {
-                    Console.WriteLine("Please log in to access the main menu.");
-                    break; // Exit the loop and redirect to login
+            while (stillRunning) {
+
+                Console.Clear();
+
+                // Visar transaktionsmenyn
+                DisplayMenu.DisplayTransactionMenu();
+
+                if (Program.LoggedInUser == null) {
+
+                    // Om ingen användare är inloggad, visa ett meddelande och avsluta loopen
+                    Console.WriteLine("Login to go back to the main menu...");
+                    break; 
                 }
                 
                 string GetUserInput = Console.ReadLine()!.ToLower();
                 int usersMenuOptions;
-                
 
-                if (int.TryParse(GetUserInput, out usersMenuOptions))
-                {
-                    switch (usersMenuOptions)
-                    {
+                // omvandlar användarens inmatning till ett heltal
+                if (int.TryParse(GetUserInput, out usersMenuOptions)) {
+
+                    Console.Clear();
+
+                    // Hantera användarens val i huvudmenyn
+                    switch (usersMenuOptions) {
+
                         case 1:
+
+                            // Om användaren väljer alternativ 1
                             await RunTransactions.CallingDeposit();
                             break;
 
                         case 2:
+                            // Om användaren väljer alternativ 2, 
                             await RunTransactions.CallingDelete();
                             break;
 
                         case 3:
+                            // Om användaren väljer alternativ 3,
                             await RunTransactions.CallingCurrentBalance();
                             break;
 
                         case 4:
+                            // Om användaren väljer alternativ 4, 
                             await RunTransactions.CallingMoneySpent();
                             break;
 
                         case 5:
+                            // Om användaren väljer alternativ 5, 
                             await RunTransactions.CallingIncomePeriods();
                             break;
 
                         case 6:
+                            // Om användaren väljer alternativ 6, 
                             DisplayMenu.DisplayUserNeedHelp();
                             break;
 
                         case 7:
+                            // Om användaren väljer alternativ 7, avsluta programmet
                             Console.Clear();
-                            Console.WriteLine("Exiting SecureSwe Bank...");
-                            stillRunning = false;
+                            Console.WriteLine("Ending SecureSwe Bank...");
+                            stillRunning = false; // Sätt loopstatus till false för att avsluta programmet/loopen
                             return;
 
                         default:
-                            Console.WriteLine("Please ensure entering a choice between 1-7!");
+
+                            // Om användaren väljer ett ogiltigt alternativ, be om ett val mellan 1-7
+                            Console.WriteLine("Ensure choosing between 1-7!");
                             break;
                     }
                 }
-                else
-                {
+                else {
+
+                    // Om användaren inte anger ett giltigt alternativ
                     Console.Clear();
-                    Console.WriteLine("Please, ensure you are choosing between 1-7!");
+                    Console.WriteLine("Ensure choosing between 1-7");
                 }
 
-                Console.WriteLine("\nPress any key to continue to the menu...");
+                // Vänta på användarinmatning för att fortsätta
+                Console.WriteLine("\nPress any key to continue....");
                 Console.ReadKey();
             }
         }

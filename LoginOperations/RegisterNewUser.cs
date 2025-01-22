@@ -3,33 +3,40 @@ using System.Threading.Tasks;
 using Npgsql;
 using BCrypt.Net;
 
+// Denna filen används för att registerera användaren
+// OBS Ny användare bara 
+
 namespace Client {
 
     public class UserRegistrationService {
-
-        // Använd den statiska Connection-klassen för att få anslutningen istället för att skriva connection string varje gång
-        // Ta bort connection string här, eftersom den nu används via Connection.GetConnection()
         
-        // Flyttad RegisterNewUser-metod
+        // Metod för användar registrering
         public async Task<Clients?> RegisterNewUser(string username, string passwordhash, string email) {
 
             try {
-                // Använd Connection.GetConnection() för att skapa en anslutning
-                using (var connection = Connection.GetConnection()) {
-                    
-                    await connection.OpenAsync();  // Använd async-metod för att öppna anslutningen asynkront
-                    
-                    string UserPassword = BCrypt.Net.BCrypt.HashPassword(passwordhash); 
 
+                // Hämtar anslutningen via metod i klassen Connection
+                using (var connection = Connection.GetConnection()) { 
+                    
+                    // Använder metod för att öppna anslutningen
+                    await connection.OpenAsync(); 
+                    
+                    string UserPassword = BCrypt.Net.BCrypt.HashPassword(passwordhash); // Hashar koden med BCrypt
+
+                    // SQL query som lägger in användarens username, password och email i tabellen clients.
                     using (var Query = new NpgsqlCommand("INSERT INTO clients (username, passwordhash, email) VALUES" 
                         + "(@username, @passwordhash, @email) RETURNING Id, username, passwordhash, email", connection)) {
                             
+                        // Lägg till parametrar till SQL för att undvika SQL injection
                         Query.Parameters.AddWithValue("@username", username);
                         Query.Parameters.AddWithValue("@passwordhash", UserPassword);
                         Query.Parameters.AddWithValue("@email", email);
 
+                        // Hämtar resultaten från databasen 
                         using (var Reader = await Query.ExecuteReaderAsync()) {
-                            if (await Reader.ReadAsync()) {  // Läs en gång för att få resultatet
+                            
+                            // Läs en gång för att få resultatet
+                            if (await Reader.ReadAsync()) { 
 
                                 var ClientData = new Clients {
                                     
@@ -37,22 +44,25 @@ namespace Client {
                                     username = Reader.GetString(1), // Hämtar användarnamn från andra kolumn
                                     passwordhash = Reader.GetString(2), // Hämtar hashad lösenord från tredje kolumn
                                     email = Reader.GetString(3) // Hämtar e-post från fjärde kolumn
+
                                 };
 
-
+                                // Skriver ut när användaren blivit registrerad
                                 Console.WriteLine($"User Registered: {ClientData.username}, ID: {ClientData.Id}");
-                                return ClientData;
+                                return ClientData; // Retunerar användaren
                             }
                         }
                     }
                 }
             }
             catch (Exception ex) {
+                
                 // Ifall programmet kraschar får användaren meddelande och varför det hände
+                // Får en felmeddelande om något går fel
                 Console.WriteLine("Error has occured " + ex.Message); 
             }
 
-            return null;  // null om inget resultat hittades
+            return null;  // null om inget resultat hittades, alltså om användaren inte registrerades
         }
     }
 }

@@ -4,39 +4,50 @@ using Npgsql;
 using BCrypt.Net;
 using Client;
 
-namespace Client
-{
-    public class UserLoginService
-    {
-        // Kopplar till Connection.GetConnection() och använder den för att öppna anslutning
-        public async Task<Clients?> UserLogin(string usernameOrEmail, string password)
-        {
-            try
-            {
-                using (var connection = Connection.GetConnection()) // Använd Connection.GetConnection() istället
-                {
-                    await connection.OpenAsync();
+// Denna fil hanterar användarens logga in med email eller username
+// Användaren måste existera i databas för inloggning
 
-                    // SQL-fråga som kollar efter antingen användarnamn eller email
+namespace Client {
+
+    // Klass som ansvarar för inloggningen
+    public class UserLoginService { 
+
+        // Metod för användarinloggning
+        public async Task<Clients?> UserLogin(string usernameOrEmail, string password) {
+
+            try {
+
+                // Skapar en databasanslutning med hjälp av Connection-klassen - metod
+                using (var connection = Connection.GetConnection()) { 
+
+                    // Öppnar connection
+                    await connection.OpenAsync(); 
+
+                    // SQL-fråga för att hitta användare baserat på deras användarnamn eller e-post
                     string sqlQuery = @"SELECT id, username, passwordhash, email 
                                         FROM clients WHERE username = @username OR email = @username";
 
-                    using (var loginCommand = new NpgsqlCommand(sqlQuery, connection))
-                    {
-                        // Lägg till parameter för både användarnamn eller email
+                    // Skapar ett objekt för att köra SQL-frågan
+                    using (var loginCommand = new NpgsqlCommand(sqlQuery, connection)) {
+
+                        // Lägger till parameter för både användarnamn eller email
                         loginCommand.Parameters.AddWithValue("@username", usernameOrEmail ?? string.Empty);
 
-                        using (var reader = await loginCommand.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                string storedHashPassword = reader["passwordhash"].ToString();
+                        // kör kommando och läser in resultaten
+                        using (var reader = await loginCommand.ExecuteReaderAsync()) {
 
-                                // Jämför inmatat lösenord med det lagrade hashade lösenordet
-                                if (BCrypt.Net.BCrypt.Verify(password, storedHashPassword))
-                                {
-                                    var loggedInUser = new Clients
-                                    {
+                            // Kollar om det finns en användare som matchar
+                            if (await reader.ReadAsync()) {
+
+                                // Hämtar det hashade lösenordet från databasen
+                                string storedHashPassword = reader["passwordhash"].ToString(); // Läser koden
+
+                                // Verifierar att det angivna lösenordet matchar det hashade lösenordet i databasen
+                                if (BCrypt.Net.BCrypt.Verify(password, storedHashPassword)) {
+
+                                    // Om lösenordet stämmer, skapas ett Clients-objekt för inloggad användare
+                                    var loggedInUser = new Clients {
+
                                         Id = Convert.ToInt32(reader["id"]),
                                         username = reader["username"].ToString(),
                                         passwordhash = storedHashPassword,
@@ -44,19 +55,22 @@ namespace Client
                                     };
 
                                     Console.WriteLine("The login is successful!");
-                                    return loggedInUser;
+                                    return loggedInUser;  // Returnerar den inloggade användaren
                                 }
                             }
-                            else
-                            {
+                            else {
+
+                                // Om ingen användare hittades
                                 Console.WriteLine("The user was not found.. try again!");
                             }
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
+
+                // Om operationen misslyckas finns det en catch
+
                 Console.WriteLine($"Error during login: {ex.Message}");
             }
 

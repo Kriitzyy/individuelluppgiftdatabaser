@@ -1,9 +1,16 @@
 using System;
 
-namespace CoreofApplication // Namespace puts together codes.
+// Denna fil har endast menyer 
+// Då många menyer upprepas och tar mycket 
+// Onödig plats 
+
+namespace CoreofApplication 
 {
+    // Klass för alla menyer 
     public static class DisplayMenu
     {
+
+        // Metod för Login val
         public static void DisplayLoginOptions() {
             
             Console.WriteLine("Welcome to SecureSweBank -");
@@ -15,9 +22,9 @@ namespace CoreofApplication // Namespace puts together codes.
             Console.WriteLine("[3] - log out, and change user!");
             Console.WriteLine("[4] - Exit");
         }
-        
 
-        public static void DisplayMainMenu() {
+        // Metod för Transaktion menyn
+        public static void DisplayTransactionMenu() {
 
             Console.WriteLine("SecureSwe Bank - Start Managing Your Finances!");
             
@@ -31,6 +38,7 @@ namespace CoreofApplication // Namespace puts together codes.
             Console.WriteLine("[7] - Exit the program!");
         }
 
+        // Metod för Inkomst meny
         public static void DisplayIncomeMenu() {
 
             Console.WriteLine("Choose a period of time to view your income:");
@@ -41,7 +49,8 @@ namespace CoreofApplication // Namespace puts together codes.
             Console.WriteLine("[4] - Daily income");
             Console.WriteLine("[5] - Exit income view");
         }
-
+        
+        // Meny för pengar man spenderat
         public static void DisplayMoneySpentMenu() {
             
             Console.WriteLine("Choose a period to see your spent money:");
@@ -53,6 +62,7 @@ namespace CoreofApplication // Namespace puts together codes.
             Console.WriteLine("[5] - Exit spending option!");
         }
 
+        // Om användaren vill förstå programmet
         public static void DisplayUserNeedHelp() {
 
             Console.WriteLine("Welcome to SecureSweBank");
