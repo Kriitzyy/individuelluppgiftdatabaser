@@ -10,7 +10,7 @@ using Npgsql;
 public class Connection {
 
     // Privat variabel som lagrar anslutningssträngen
-    private static string ConnectionString = "Host=localhost;Username=postgres;Password=Mo20042004;Database=bankapp";
+    private static string ConnectionString = "Host=localhost;Username=postgres;Password=123;Database=bankapp";
 
     // Publik metod som returnerar en ny databasanslutning
     public static NpgsqlConnection GetConnection() { 
